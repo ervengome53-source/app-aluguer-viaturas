@@ -1,4 +1,4 @@
-# app-aluguer-viaturas
+# Sistema-Aluguer-Viaturas
 Aplicação para aluguer de viaturas - Projeto de Engenharia de Software II
 
 equipa
