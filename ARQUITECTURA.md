@@ -32,11 +32,10 @@ Justificativa:
 
 3. Stack Tecnológica
 
-
-
+![Screenshot_20260318-073749](https://github.com/user-attachments/assets/04c29a71-dcd0-4c6d-a9c8-d0eeb2b1bcf7)
 
    
-5. DIAGRAMA DA ARQUITETURA E Estrutura do Sistema (MVC)*
+5. DIAGRAMA DA ARQUITETURA E Estrutura do Sistema (MVC)
 
 
 
