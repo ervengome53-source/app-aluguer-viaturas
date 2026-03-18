@@ -36,10 +36,13 @@ Justificativa:
 
    
 5. DIAGRAMA DA ARQUITETURA E Estrutura do Sistema (MVC)
+   
 
+   frontend: HTML ,css, JavaScript
 
+   backend:  PHP
 
-
+   Base de Dados: MySQL
 
 
 
