@@ -1,8 +1,6 @@
-
 1. ARQUITECTURA DO SISTEMA
 
 RF PRINCIPAIS (MVP)
-
 Para o primeiro incremento (MVP), o sistema deve ter as seguintes funcionalidades essenciais:
 
 RF01 – Registo e autenticação de utilizadores (cliente e gestor)
@@ -29,6 +27,8 @@ Justificativa:
 * Facilita manutenção e testes
 
 * Permite que diferentes membros da equipa trabalhem em camadas distintas
+
+  
 
 3. Stack Tecnológica
 
