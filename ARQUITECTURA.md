@@ -1,4 +1,5 @@
 1. ARQUITECTURA DO SISTEMA
+<img width="1920" height="1031" alt="image" src="https://github.com/user-attachments/assets/61a15a2f-7227-4ae1-8228-078ef304dd8b" />
 
 RF PRINCIPAIS (MVP)
 Para o primeiro incremento (MVP), o sistema deve ter as seguintes funcionalidades essenciais:
