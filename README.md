@@ -10,7 +10,7 @@ Sistema desenvolvido para gerenciar o aluguer de viaturas, permitindo cadastro d
 - Aluguer de viaturas
 - Devolução de viaturas
 - Listagem de viaturas disponíveis
-
+ 
 ## Tecnologias usadas
 - PHP
 - MySQL
