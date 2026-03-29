@@ -1,7 +1,7 @@
-Sistema de Aluguer de Viaturas
+##Sistema de Aluguer de Viaturas 
 Disciplina: Engenharia de Software II
 
-1- Problemas Identificados
+##1- Problemas Identificados
 Após entrevista simulada e brainstorming, foram identificados os seguintes problemas:
 
       Dificuldade em saber quais viaturas estão disponíveis em tempo real
@@ -12,7 +12,7 @@ Após entrevista simulada e brainstorming, foram identificados os seguintes prob
       Demora no atendimento ao cliente
 
 
-2- Descobertas da Entrevista
+##2- Descobertas da Entrevista
 
 Stakeholder entrevistado: Funcionário da empresa de aluguer 
 Principais respostas obtidas:
@@ -31,7 +31,7 @@ Necessidades identificadas:
     Atualização automática do estado da viatura
 
 
-3- Cenários do Dia-a-Dia   
+##3- Cenários do Dia-a-Dia   
 
 Cenário 1 – Cliente precisa de viatura urgente
 
@@ -58,7 +58,7 @@ Cenário 3 – Dupla reserva
     Necessidade: Sistema deve impedir reservas sobrepostas.
 
 
-4- Restrições Identificadas
+##4- Restrições Identificadas
 
     Uma viatura não pode estar em dois alugueres simultaneamente.
     
