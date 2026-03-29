@@ -9,6 +9,7 @@ Sistema desenvolvido para gerenciar o aluguer de viaturas, permitindo cadastro d
 - Cadastro de viaturas
 - Aluguer de viaturas
 - Devolução de viaturas
+- gerar relatorios
 - Listagem de viaturas disponíveis
  
 ## Tecnologias usadas
