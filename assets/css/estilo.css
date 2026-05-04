@@ -1,0 +1,827 @@
+/* ============================================
+   SISTEMA DE ALUGUER DE VIATURAS - ESTILO GLOBAL
+   Cores: Azul Escuro (#1E3A5F) | Laranja (#FF8C00) | Branco (#FFFFFF)
+   ============================================ */
+
+:root {
+    /* Cores Principais */
+    --azul-escuro: #1E3A5F;
+    --azul-claro: #2a5298;
+    --laranja: #FF8C00;
+    --laranja-escuro: #e67e00;
+    --laranja-claro: #ff9f33;
+    --branco: #FFFFFF;
+    --cinza-claro: #f5f5f5;
+    --cinza: #ddd;
+    --cinza-escuro: #666;
+    
+    /* Cores de Status */
+    --sucesso: #28a745;
+    --perigo: #dc3545;
+    --aviso: #ffc107;
+    --info: #17a2b8;
+    
+    /* Sombras */
+    --sombra-peq: 0 2px 4px rgba(0,0,0,0.1);
+    --sombra-med: 0 4px 6px rgba(0,0,0,0.1);
+    --sombra-grande: 0 10px 15px rgba(0,0,0,0.1);
+    
+    /* Transições */
+    --transicao: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f5f5;  /* ← mude para cinza claro em vez de gradiente */
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ============================================
+   LAYOUT PRINCIPAL
+   ============================================ */
+.container-app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Barra Lateral */
+.barra-lateral {
+    width: 280px;
+    background: var(--azul-escuro);
+    color: var(--branco);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: var(--transicao);
+    z-index: 1000;
+    box-shadow: var(--sombra-med);
+}
+
+.barra-lateral-cabecalho {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.2);
+}
+
+.barra-lateral-cabecalho h3 {
+    color: var(--laranja);
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.barra-lateral-cabecalho small {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.barra-lateral-nav {
+    padding: 1rem 0;
+}
+
+.barra-lateral-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    color: var(--branco);
+    text-decoration: none;
+    transition: var(--transicao);
+    position: relative;
+    font-size: 0.95rem;
+}
+
+.barra-lateral-item:hover {
+    background: rgba(255,140,0,0.15);
+    padding-left: 2rem;
+}
+
+.barra-lateral-item.ativo {
+    background: var(--laranja);
+    color: var(--branco);
+}
+
+.barra-lateral-item.ativo::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--branco);
+}
+
+/* Conteúdo Principal */
+.conteudo-principal {
+    flex: 1;
+    margin-left: 280px;
+    padding: 1.5rem;
+}
+
+/* Barra Superior */
+.barra-superior {
+    background: var(--branco);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--sombra-peq);
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--azul-escuro);
+}
+
+.info-utilizador {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nome-utilizador {
+    font-weight: 500;
+    color: var(--azul-escuro);
+}
+
+.avatar-utilizador {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--laranja);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--branco);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* ============================================
+   CARTÕES E ESTATÍSTICAS
+   ============================================ */
+.grade-estatisticas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.cartao-estatistica {
+    background: var(--branco);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--sombra-peq);
+    transition: var(--transicao);
+}
+
+.cartao-estatistica:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-med);
+}
+
+.estatistica-info h3 {
+    color: var(--cinza-escuro);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.estatistica-numero {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--azul-escuro);
+}
+
+.estatistica-icone {
+    font-size: 2.5rem;
+    color: var(--laranja);
+    opacity: 0.8;
+}
+
+.cartao {
+    background: var(--branco);
+    border-radius: 12px;
+    box-shadow: var(--sombra-peq);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.cartao-cabecalho {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--cinza);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--cinza-claro);
+}
+
+.cartao-titulo {
+    color: var(--azul-escuro);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.cartao-corpo {
+    padding: 1.5rem;
+}
+
+/* ============================================
+   FORMULÁRIOS
+   ============================================ */
+.grupo-formulario {
+    margin-bottom: 1.25rem;
+}
+
+.rotulo-formulario {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--azul-escuro);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.controlo-formulario {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cinza);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transicao);
+    font-family: inherit;
+}
+
+.controlo-formulario:focus {
+    outline: none;
+    border-color: var(--laranja);
+    box-shadow: 0 0 0 3px rgba(255,140,0,0.1);
+}
+
+.controlo-formulario.erro {
+    border-color: var(--perigo);
+}
+
+textarea.controlo-formulario {
+    resize: vertical;
+    min-height: 80px;
+}
+
+select.controlo-formulario {
+    cursor: pointer;
+}
+
+/* ============================================
+   BOTÕES
+   ============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transicao);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.btn-primario {
+    background: var(--azul-escuro);
+    color: var(--branco);
+}
+
+.btn-primario:hover {
+    background: var(--laranja);
+    transform: translateY(-2px);
+}
+
+.btn-destaque {
+    background: var(--laranja);
+    color: var(--branco);
+}
+
+.btn-destaque:hover {
+    background: var(--laranja-escuro);
+    transform: translateY(-2px);
+}
+
+.btn-sucesso {
+    background: var(--sucesso);
+    color: var(--branco);
+}
+
+.btn-perigo {
+    background: var(--perigo);
+    color: var(--branco);
+}
+
+.btn-info {
+    background: var(--info);
+    color: var(--branco);
+}
+
+.btn-secundario {
+    background: var(--cinza);
+    color: var(--cinza-escuro);
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+.btn-lg {
+    padding: 0.8rem 1.6rem;
+    font-size: 1rem;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   TABELAS
+   ============================================ */
+.container-tabela {
+    overflow-x: auto;
+}
+
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela th,
+.tabela td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--cinza);
+}
+
+.tabela th {
+    background: var(--azul-escuro);
+    color: var(--branco);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tabela tr:hover {
+    background: rgba(30,58,95,0.03);
+}
+
+/* ============================================
+   ETIQUETAS E BADGES
+   ============================================ */
+.etiqueta {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.etiqueta-sucesso {
+    background: var(--sucesso);
+    color: var(--branco);
+}
+
+.etiqueta-perigo {
+    background: var(--perigo);
+    color: var(--branco);
+}
+
+.etiqueta-aviso {
+    background: var(--aviso);
+    color: #333;
+}
+
+.etiqueta-info {
+    background: var(--info);
+    color: var(--branco);
+}
+
+.etiqueta-pendente {
+    background: var(--aviso);
+    color: #333;
+}
+
+.etiqueta-confirmada {
+    background: var(--sucesso);
+    color: var(--branco);
+}
+
+.etiqueta-cancelada {
+    background: var(--perigo);
+    color: var(--branco);
+}
+
+/* ============================================
+   GRADE DE VEÍCULOS
+   ============================================ */
+.grade-veiculos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.cartao-veiculo {
+    background: var(--branco);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--sombra-peq);
+    transition: var(--transicao);
+}
+
+.cartao-veiculo:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-grande);
+}
+
+.imagem-veiculo {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.info-veiculo {
+    padding: 1.25rem;
+}
+
+.titulo-veiculo {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--azul-escuro);
+    margin-bottom: 0.5rem;
+}
+
+.preco-veiculo {
+    font-size: 1.4rem;
+    color: var(--laranja);
+    font-weight: bold;
+    margin: 0.75rem 0;
+}
+
+/* ============================================
+   FILTROS
+   ============================================ */
+.barra-filtros {
+    background: var(--branco);
+    padding: 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    box-shadow: var(--sombra-peq);
+}
+
+.grupo-filtro {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal.ativo {
+    display: flex;
+}
+
+.conteudo-modal {
+    background: var(--branco);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalEntrar 0.3s ease;
+}
+
+@keyframes modalEntrar {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.cabecalho-modal {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--cinza);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cabecalho-modal h3 {
+    color: var(--azul-escuro);
+    font-size: 1.2rem;
+}
+
+.fechar-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--cinza-escuro);
+}
+
+.corpo-modal {
+    padding: 1.25rem;
+}
+
+.rodape-modal {
+    padding: 1.25rem;
+    border-top: 1px solid var(--cinza);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+/* ============================================
+   NOTIFICAÇÕES
+   ============================================ */
+.notificacao {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    background: var(--branco);
+    box-shadow: var(--sombra-grande);
+    z-index: 3000;
+    animation: notificacaoEntrar 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.notificacao.sucesso {
+    border-left: 4px solid var(--sucesso);
+}
+
+.notificacao.erro {
+    border-left: 4px solid var(--perigo);
+}
+
+.notificacao.aviso {
+    border-left: 4px solid var(--aviso);
+}
+
+.notificacao.info {
+    border-left: 4px solid var(--info);
+}
+
+@keyframes notificacaoEntrar {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   PAGAMENTOS
+   ============================================ */
+.metodos-pagamento {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metodo-pagamento {
+    border: 2px solid var(--cinza);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.metodo-pagamento:hover {
+    border-color: var(--laranja);
+    background: rgba(255,140,0,0.05);
+}
+
+.metodo-pagamento.selecionado {
+    border-color: var(--laranja);
+    background: rgba(255,140,0,0.1);
+}
+
+.metodo-icone {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.resumo-pagamento {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--cinza-claro);
+    border-radius: 12px;
+}
+
+.linha-resumo {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+.linha-resumo.total {
+    border-top: 1px solid var(--cinza);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--azul-escuro);
+}
+
+/* ============================================
+   LOGIN E REGISTO
+   ============================================ */
+.pagina-auth {
+    background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-claro) 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.caixa-auth {
+    background: var(--branco);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--sombra-grande);
+}
+
+.cabecalho-auth {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.cabecalho-auth h2 {
+    color: var(--azul-escuro);
+    font-size: 1.8rem;
+}
+
+.logo-auth {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+@media (max-width: 992px) {
+    .grade-veiculos {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .barra-lateral {
+        transform: translateX(-100%);
+    }
+    
+    .barra-lateral.ativo {
+        transform: translateX(0);
+    }
+    
+    .conteudo-principal {
+        margin-left: 0;
+    }
+    
+    .menu-toggle {
+        display: block;
+    }
+    
+    .grade-estatisticas {
+        grid-template-columns: 1fr;
+    }
+    
+    .grade-veiculos {
+        grid-template-columns: 1fr;
+    }
+    
+    .barra-filtros {
+        flex-direction: column;
+    }
+    
+    .grupo-filtro {
+        width: 100%;
+    }
+    
+    .tabela th,
+    .tabela td {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .conteudo-principal {
+        padding: 1rem;
+    }
+    
+    .cartao-cabecalho {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   UTILITÁRIOS
+   ============================================ */
+.texto-centro {
+    text-align: center;
+}
+
+.texto-direita {
+    text-align: right;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+.p-1 { padding: 0.5rem; }
+.p-2 { padding: 1rem; }
+.p-3 { padding: 1.5rem; }
+
+.w-100 { width: 100%; }
+
+.btn-ver-detalhes {
+    background: #1E3A5F;
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    width: 100%;
+    transition: background 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.btn-ver-detalhes:hover {
+    background: #FF8C00;
+}

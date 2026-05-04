@@ -1,0 +1,157 @@
+/* ============================================
+   CLIENTE - ESTILOS ESPECÍFICOS
+   ============================================ */
+
+/* Dashboard Cliente */
+.welcome-banner {
+    background: linear-gradient(135deg, var(--azul-escuro), var(--azul-claro));
+    color: var(--branco);
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+}
+
+.welcome-banner h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-banner p {
+    opacity: 0.9;
+}
+
+/* Reservas do Cliente */
+.reserva-card {
+    background: var(--branco);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--sombra-peq);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.reserva-info h4 {
+    color: var(--azul-escuro);
+    margin-bottom: 0.25rem;
+}
+
+.reserva-datas {
+    font-size: 0.85rem;
+    color: var(--cinza-escuro);
+}
+
+.reserva-preco {
+    font-weight: bold;
+    color: var(--laranja);
+}
+
+/* Perfil Cliente */
+.perfil-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--laranja);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--branco);
+    margin: 0 auto 1rem;
+}
+
+/* Histórico */
+.filtro-historico {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Catálogo */
+.veiculo-destaque {
+    position: relative;
+    overflow: hidden;
+}
+
+.veiculo-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--laranja);
+    color: var(--branco);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+/* Correções para o catálogo */
+.grade-veiculos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.cartao-veiculo {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cartao-veiculo:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.imagem-veiculo {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.info-veiculo {
+    padding: 1rem;
+}
+
+.titulo-veiculo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #1E3A5F;
+    margin-bottom: 0.5rem;
+}
+
+.preco-veiculo {
+    font-size: 1.3rem;
+    color: #FF8C00;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.btn-primario {
+    background: #1E3A5F;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.btn-primario:hover {
+    background: #FF8C00;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .grade-veiculos {
+        grid-template-columns: 1fr;
+    }
+}
