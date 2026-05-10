@@ -1,0 +1,16 @@
+# Requisitos Não-Funcionais (RNF)
+
+
+ID	 Categoria	Requisito Não-Funcional	Métrica/Critério
+
+RNF01	Desempenho	Pesquisa de disponibilidade retorna em tempo real	Tempo de resposta < 2s
+
+RNF02	Segurança	Dados de clientes e documentos protegidos	Autenticação obrigatória, senhas encriptadas, HTTPS
+
+RNF03	Usabilidade	interface intuitiva para atendentes e clientes	Navegação em até 3 cliques para acção principal
+
+RNF04	Disponibilidade	Sistema deve estar acessível em horário comercial	Uptime 99% (08h-20h)
+
+RNF05	Escalabilidade	Suportar até 50 utilizadores simultâneos	Teste de carga com 50 req/seg
+
+RNF06	Concorrência	Evitar dupla reserva no mesmo veículo	Lock optimista na tabela de reservas

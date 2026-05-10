@@ -71,7 +71,7 @@ $reservas_recentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 <div class="cartao-estatistica">
                     <div class="estatistica-info">
-                        <h3>Total Aluguéis</h3>
+                        <h3>Total Aluguer</h3>
                         <div class="estatistica-numero"> <?= $estatisticas['total_alugueis'] ?></div>
                     </div>
                     <div class="estatistica-icone"></div>

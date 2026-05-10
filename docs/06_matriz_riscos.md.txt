@@ -1,0 +1,10 @@
+# Matriz de Riscos
+
+ID - Risco - Probabilidade - Impacto - Prioridade - Mitigação 
+
+R01 - Membro do grupo desiste - Média - Alto - Alta - Documentar tarefas, comunicação constante 
+R02 - Atraso na implementação - Média - Alto - Alta - Priorizar funcionalidades Must 
+R03 - Conflitos de agenda - Alta - Médio - Alta - Horários fixos semanais 
+R04 - Dupla reserva do veículo - Baixa - Alto - Média - Verificar disponibilidade antes de inserir 
+R05 - Perda de dados - Baixa - Muito Alto - Alta - Backup diário 
+R06 - Dificuldade com CSS responsivo - Média - Médio - Média   Testar em diferentes resoluções 

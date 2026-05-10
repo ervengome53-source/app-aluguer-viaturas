@@ -46,7 +46,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $cliente['email'] = $email;
         $cliente['telefone'] = $telefone;
         $cliente['morada'] = $morada;
-        $cliente['nif'] = $nif;
+        $cliente['nif'] = $nif;  // Corrigido: antes era 'NUIT'
     } else {
         $erro = 'Erro ao atualizar cliente';
     }
@@ -101,7 +101,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="form-group">
                 <label>NUIT</label>
-                <input type="text" name="NUIT" value="<?= htmlspecialchars($cliente['nif']) ?>">
+                <input type="text" name="nif" value="<?= htmlspecialchars($cliente['nif']) ?>">  <!-- Corrigido: 'NUIT' mudou para 'nif' -->
             </div>
             <div class="form-group">
                 <label>Morada</label>

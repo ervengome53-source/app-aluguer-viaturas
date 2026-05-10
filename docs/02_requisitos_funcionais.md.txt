@@ -1,0 +1,23 @@
+# Requisitos Funcionais (RF)
+
+ID	Requisito Funcional	Prioridade	Descrição Completa
+
+RF01	Registrar Viatura	Must	 Gestor adiciona nova viatura com marca, modelo,   ano, matrícula, tipo de combustível, preço/dia, e foto
+
+RF02	Consultar Disponibilidade	Must	Cliente pesquisa viaturas disponíveis num período (data/hora início e fim)
+
+RF03	Realizar Reserva	Must	Cliente reserva viatura sem pagamento imediato, com validade de 2h
+
+RF04	Confirmar Aluguer	Must	Atendente converte reserva em aluguer após verificar documentos e pagamento
+
+RF05	Registrar Devolução	Must	Atendente regista devolução, calcula multas por atraso ou danos
+
+RF06	Cancelar Reserva	Should	Cliente ou atendente cancela reserva dentro do prazo permitido
+
+RF07	Gerir	Should	Gestor edita, desativa ou remove viaturas
+
+RF08	Relatório de Facturação	Could	Administrador visualiza receitas por período
+
+RF09	Autenticação de Utilizadores	Must	Login para Cliente, Atendente, Gestor, Admin com perfis distintos
+
+RF10	Notificações Automáticas	Could	Sistema envia lembrete de devolução (24h antes)

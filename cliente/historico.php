@@ -58,14 +58,7 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
                 <div class="cartao-estatistica">
                     <div class="estatistica-info">
                         <h3>Total Gasto</h3>
-                        <div class="estatistica-numero"> MZN <?= number_format($stats['total_gasto'] ?? 0, 2) ?></div>
-                    </div>
-                    <div class="estatistica-icone"></div>
-                </div>
-                <div class="cartao-estatistica">
-                    <div class="estatistica-info">
-                        <h3>Media por Aluguer</h3>
-                        <div class="estatistica-numero"> MZN <?= number_format($stats['media_gasto'] ?? 0, 2) ?></div>
+                        <div class="estatistica-numero">MZN <?= number_format($stats['total_gasto'] ?? 0, 2) ?></div>
                     </div>
                     <div class="estatistica-icone"></div>
                 </div>

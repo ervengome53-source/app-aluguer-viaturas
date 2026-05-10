@@ -109,7 +109,7 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="cartao">
 			
                 <div class="cartao-cabecalho">
-                    <h3 class="cartao-titulo"> Gestão de Viaturas</h3>
+                    <h3 class="cartao-titulo">Gestão de Viaturas</h3>
                     <button class="btn btn-primario" onclick="abrirModalNovaViatura()">+ Nova Viatura</button>
                 </div>
                 

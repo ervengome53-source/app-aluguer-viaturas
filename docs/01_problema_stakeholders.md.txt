@@ -1,0 +1,31 @@
+01_problema_stakeholders.md
+  
+##  Definição do Problema e Stakeholders
+
+##  Problema
+
+Problema: Dupla reserva de viaturas, falta de transparência sobre disponibilidade, controlo ineficiente de documentos e ausência de notificações automáticas.
+
+Contexto: Empresas de aluguer de viaturas que usam processos manuais.
+
+Dentro do Escopo:
+- Gestão de utilizadores (clientes, funcionários, admin)
+- Catálogo de viaturas com filtros
+- Reservas online
+- Gestão de aluguéis e devoluções
+- Pagamentos
+
+Fora do Escopo:
+- Integração com API de mapas reais
+- Sistema de pagamento com gateway real
+- Aplicação móvel nativa
+
+## Stakeholders
+
+Stakeholder - Descrição - Objectivos 
+
+Cliente - Utilizador que aluga viaturas -  Reservar viaturas, ver histórico, pagar online 
+Funcionário - Atendente da loja - Confirmar reservas, registar aluguéis, devoluções 
+Administrador - Gestor do sistema - Gerir viaturas, utilizadores, ver relatórios 
+
+Objectivo do sistema: Disponibilizar uma plataforma onde clientes possam consultar viaturas disponíveis, fazer reservas online, e gestores possam gerir frotas, aprovar alugueres e controlar devoluções.

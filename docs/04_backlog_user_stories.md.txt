@@ -1,0 +1,44 @@
+# Backlog de User Stories (Mínimo 10)
+
+ID	User Story	Prioridade	Critérios de Aceitação	Estimativa
+
+US01	Como cliente, quero ver viaturas disponíveis por data para planejar meu aluguer	Must	- Seleccionar datas e hora
+- Ver lista apenas de viaturas livres
+- Mostrar preço total estimado	5h
+
+US02	Como cliente, quero fazer reserva para garantir a viatura	Must	- Seleccionar viatura da lista
+- Preencher dados pessoais
+- Receber código de reserva
+	8h
+US03	Como atendente, quero confirmar aluguer para iniciar o contrato	Must	- Buscar reserva por código
+- Verificar documentos
+- Registrar pagamento e gerar contrato	6h
+
+US04	Como gestor de frota, quero adicionar nova viatura para actualizar catálogo	Must	- Preencher todos os campos obrigatórios
+- Upload de foto
+- Viatura aparece na pesquisa	4h
+
+US05	Como atendente, quero registar devolução para calcular custo final	Should	- Buscar aluguer activo
+- Registrar km final e danos
+- Calcular multa se houver atraso	5h
+
+US06	Como cliente, quero cancelar reserva para evitar encargos	Should	- Aceder com código de reserva
+- Cancelar se faltar > 2h para início
+- Receber confirmação	3h
+
+US07	Como administrador, quero gerar relatório de facturação para analisar receitas	Could	- Seleccionar período (dia/semana/mês)
+- Ver total por viatura
+- Exportar para PDF/Excel	6h
+
+US08	Como cliente, quero receber notificação de lembrete para não esquecer a devolução	Could	- 24h antes do fim do aluguer
+- Receber SMS ou Email
+- Conteúdo: viatura, data/hora devolução	4h
+
+US09	Como gestor, quero editar preço de viatura para ajustar a demanda	Should	- Campo editável na ficha da viatura
+- Histórico de alterações registado	3h
+
+US010	Como cliente, quero ver meu histórico de alugueres para controlar gastos	Could	- Lista de alugueres anteriores
+- Datas, viaturas, valores pagos
+- Status (concluído/cancelado)	5h
+
+

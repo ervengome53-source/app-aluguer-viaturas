@@ -2,16 +2,14 @@
    ADMIN - ESTILOS ESPECÍFICOS
    ============================================ */
 
-/* Gráficos */
 .grafico-container {
     background: var(--branco);
     border-radius: 12px;
     padding: 1rem;
-    height: 300px;
+    height: 320px;
     position: relative;
 }
 
-/* Tabela de Gestão */
 .tabela-acoes {
     display: flex;
     gap: 0.5rem;
@@ -21,12 +19,11 @@
 .btn-icon {
     padding: 0.4rem;
     border-radius: 6px;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
-/* Formulário de CRUD */
 .form-crud {
-    max-width: 800px;
+    max-width: 850px;
     margin: 0 auto;
 }
 
@@ -36,7 +33,18 @@
     gap: 1rem;
 }
 
-/* Preview de Imagem */
+.form-row label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    font-size: 0.9rem;
+    padding: 0.7rem;
+}
+
 .preview-imagem {
     width: 150px;
     height: 150px;
@@ -46,11 +54,10 @@
     border: 1px solid var(--cinza);
 }
 
-/* Dashboard Admin */
 .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1.2rem;
     margin-bottom: 1.5rem;
 }
 
@@ -58,14 +65,14 @@
     background: linear-gradient(135deg, var(--azul-escuro), var(--azul-claro));
     color: var(--branco);
     border-radius: 12px;
-    padding: 1.25rem;
+    padding: 1.2rem;
     text-align: center;
 }
 
 .kpi-valor {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: bold;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
 }
 
 .kpi-label {
@@ -73,7 +80,6 @@
     opacity: 0.9;
 }
 
-/* Relatórios */
 .filtros-relatorio {
     background: var(--cinza-claro);
     padding: 1rem;
@@ -84,9 +90,10 @@
 .btn-exportar {
     background: var(--sucesso);
     color: var(--branco);
+    font-size: 0.85rem;
+    padding: 0.6rem 1.2rem;
 }
 
-/* Configurações */
 .config-group {
     border-bottom: 1px solid var(--cinza);
     padding-bottom: 1rem;
@@ -96,3 +103,130 @@
 .config-group:last-child {
     border-bottom: none;
 }
+
+.config-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+.config-group input,
+.config-group select,
+.config-group textarea {
+    font-size: 0.9rem;
+    padding: 0.7rem;
+    width: 100%;
+}
+
+        .alerta-atraso {
+            background: #dc3545;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .mapa-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .mapa-container h3 {
+            color: #1E3A5F;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #FF8C00;
+        }
+        
+        .mapa-simulado {
+            background: linear-gradient(135deg, #1a472a 0%, #2d6a4f 100%);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 350px;
+        }
+        
+        .mapa-titulo {
+            text-align: center;
+            color: white;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .mapa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .mapa-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 12px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .mapa-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .mapa-card.alugado {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .status-alugado {
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: 11px;
+        }
+        
+        .dias-restantes {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .dias-1 { background: #dc3545; color: white; }
+        .dias-2 { background: #ffc107; color: #333; }
+        .dias-3 { background: #28a745; color: white; }
+        
+        .tabela-devolucoes {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .tabela-devolucoes th, .tabela-devolucoes td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tabela-devolucoes th {
+            background: #1E3A5F;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .mapa-grid {
+                grid-template-columns: 1fr;
+            }
+        }

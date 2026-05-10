@@ -188,7 +188,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             <img src="../assets/imagens/66.jpg" alt="SISTEMA_ALUGUER_ViATURAS logo" style="max-width: 150px; height: auto; margin-bottom: 10px;">
         </div>
             <div class="logo"></div>
-            <h2>SIGAV</h2>
+            <strong><h2>SIGAV</h2></strong>
            <strong> <p>Sistema de Gestão de Aluguer de Viaturas</p></strong>
         </div>
         

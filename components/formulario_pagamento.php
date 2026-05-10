@@ -93,19 +93,19 @@ function exibirFormularioPagamento($valor_total, $reserva_id = null, $aluguer_id
             <h4>Resumo do Pagamento</h4>
             <div class="linha-resumo">
                 <span>Subtotal:</span>
-                <span id="subtotal">MZN<?= number_format($valor_total, 2) ?></span>
+                <span id="subtotal">MZN <?= number_format($valor_total, 2) ?></span>
             </div>
             <div class="linha-resumo">
                 <span>IVA (23%):</span>
-                <span id="iva_valor">MZN<?= number_format($valor_total * 0.23, 2) ?></span>
+                <span id="iva_valor">MZN <?= number_format($valor_total * 0.23, 2) ?></span>
             </div>
             <div class="linha-resumo">
                 <span>Taxa de Serviço (5%):</span>
-                <span id="taxa_servico">MZN<?= number_format($valor_total * 0.05, 2) ?></span>
+                <span id="taxa_servico">MZN <?= number_format($valor_total * 0.05, 2) ?></span>
             </div>
             <div class="linha-resumo total">
                 <strong>TOTAL:</strong>
-                <strong id="total">MZN<?= number_format($valor_total * 1.28, 2) ?></strong>
+                <strong id="total">MZN <?= number_format($valor_total * 1.28, 2) ?></strong>
             </div>
         </div>
         

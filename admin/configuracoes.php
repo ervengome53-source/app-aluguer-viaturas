@@ -252,9 +252,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <button class="btn btn-info" onclick="limparCache()">
                          Limpar Cache
                     </button>
-                    <button class="btn btn-info" onclick="gerarRelatorioSistema()">
-                         Relatório do Sistema
-                    </button>
                     <button class="btn btn-perigo" onclick="verLogs()">
                          Ver Logs do Sistema
                     </button>

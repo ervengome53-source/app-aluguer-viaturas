@@ -106,11 +106,11 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h3 class="cartao-titulo">Gestão de Clientes</h3>
                     <div style="display: flex; gap: 0.5rem;">
                         <form method="GET" style="display: flex; gap: 0.5rem;">
-                            <input type="text" name="busca" class="controlo-formulario" placeholder="Buscar cliente..." 
+                            <input type="text" name="busca" class="controlo-formulario" placeholder="🔍Buscar cliente..." 
                                    value="<?= htmlspecialchars($busca) ?>" style="width: 200px;">
                             <button type="submit" class="btn btn-info"> Buscar</button>
                             <?php if($busca): ?>
-                                <a href="clientes.php" class="btn btn-secundario">Limpar</a>
+                                <a href="clientes.php" class="btn btn-secundario">🗑Limpar</a>
                             <?php endif; ?>
                         </form>
                         <button class="btn btn-primario" onclick="abrirModalNovoCliente()">+ Novo Cliente</button>

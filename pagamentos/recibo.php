@@ -41,6 +41,7 @@ $taxa_servico = $subtotal * 0.05;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recibo</title>
+	   <link rel="stylesheet" href="../assets/css/estilo.css">
     <style>
         @media print {
             .no-print { display: none; }
@@ -154,8 +155,8 @@ $taxa_servico = $subtotal * 0.05;
         <div class="info-empresa">
             <strong>SIGAV - Aluguer de Viaturas, Lda.</strong><br>
             NIF: 123456789<br>
-            Morada: Rua Exemplo, 123 - NHAVELA<br>
-            Tel: 210 000 000 | Email: geral@rentcar.com
+            Morada: Matola, Circulo - Ndlavela<br>
+            Tel: +258 000 000 | Email: sigav@gmail.com
         </div>
         
         <div class="info-cliente">
@@ -184,15 +185,15 @@ $taxa_servico = $subtotal * 0.05;
             <table class="tabela-detalhes">
                 <tr>
                     <td>Subtotal</td>
-                    <td>€<?= number_format($subtotal, 2) ?></td>
+                    <td>MZN<?= number_format($subtotal, 2) ?></td>
                 </tr>
                 <tr>
                     <td>IVA (23%)</td>
-                    <td>€<?= number_format($iva, 2) ?></td>
+                    <td>MZN<?= number_format($iva, 2) ?></td>
                 </tr>
                 <tr>
                     <td>Taxa de Serviço (5%)</td>
-                    <td>€<?= number_format($taxa_servico, 2) ?></td>
+                    <td>MZN<?= number_format($taxa_servico, 2) ?></td>
                 </tr>
                 <tr class="total">
                     <td><strong>TOTAL PAGO</strong></td>

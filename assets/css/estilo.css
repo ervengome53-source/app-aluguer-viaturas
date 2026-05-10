@@ -30,6 +30,13 @@
     --transicao: all 0.3s ease;
 }
 
+/* ============================================
+   TAMANHO DAS LETRAS - VERSÃO INTERMEDIÁRIA
+   ============================================ */
+html {
+    font-size: 18px;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -38,9 +45,25 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f5f5;  /* ← mude para cinza claro em vez de gradiente */
+    background: #f5f5f5;
     color: #333;
     line-height: 1.6;
+    font-size: 1rem;
+}
+
+h1 { font-size: 2.2rem; }
+h2 { font-size: 1.9rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+
+p, span, li, td, th, label, div, a, .texto-normal {
+    font-size: 1rem;
+}
+
+small, .small-text {
+    font-size: 0.85rem;
 }
 
 /* ============================================
@@ -53,7 +76,7 @@ body {
 
 /* Barra Lateral */
 .barra-lateral {
-    width: 280px;
+    width: 270px;
     background: var(--azul-escuro);
     color: var(--branco);
     position: fixed;
@@ -74,7 +97,7 @@ body {
 .barra-lateral-cabecalho h3 {
     color: var(--laranja);
     font-size: 1.5rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
 }
 
 .barra-lateral-cabecalho small {
@@ -89,13 +112,13 @@ body {
 .barra-lateral-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.5rem;
+    gap: 0.8rem;
+    padding: 0.8rem 1.5rem;
     color: var(--branco);
     text-decoration: none;
     transition: var(--transicao);
     position: relative;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .barra-lateral-item:hover {
@@ -121,7 +144,7 @@ body {
 /* Conteúdo Principal */
 .conteudo-principal {
     flex: 1;
-    margin-left: 280px;
+    margin-left: 270px;
     padding: 1.5rem;
 }
 
@@ -155,11 +178,12 @@ body {
 .nome-utilizador {
     font-weight: 500;
     color: var(--azul-escuro);
+    font-size: 1rem;
 }
 
 .avatar-utilizador {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     background: var(--laranja);
     display: flex;
@@ -167,7 +191,7 @@ body {
     justify-content: center;
     color: var(--branco);
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 /* ============================================
@@ -175,7 +199,7 @@ body {
    ============================================ */
 .grade-estatisticas {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
@@ -205,13 +229,13 @@ body {
 }
 
 .estatistica-numero {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: bold;
     color: var(--azul-escuro);
 }
 
 .estatistica-icone {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     color: var(--laranja);
     opacity: 0.8;
 }
@@ -225,7 +249,7 @@ body {
 }
 
 .cartao-cabecalho {
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--cinza);
     display: flex;
     justify-content: space-between;
@@ -235,7 +259,7 @@ body {
 
 .cartao-titulo {
     color: var(--azul-escuro);
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 600;
 }
 
@@ -247,7 +271,7 @@ body {
    FORMULÁRIOS
    ============================================ */
 .grupo-formulario {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
 }
 
 .rotulo-formulario {
@@ -260,10 +284,10 @@ body {
 
 .controlo-formulario {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: 0.7rem 1rem;
     border: 1px solid var(--cinza);
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: var(--transicao);
     font-family: inherit;
 }
@@ -280,7 +304,7 @@ body {
 
 textarea.controlo-formulario {
     resize: vertical;
-    min-height: 80px;
+    min-height: 90px;
 }
 
 select.controlo-formulario {
@@ -350,7 +374,7 @@ select.controlo-formulario {
 }
 
 .btn-lg {
-    padding: 0.8rem 1.6rem;
+    padding: 0.8rem 1.5rem;
     font-size: 1rem;
 }
 
@@ -373,7 +397,7 @@ select.controlo-formulario {
 
 .tabela th,
 .tabela td {
-    padding: 1rem;
+    padding: 0.9rem;
     text-align: left;
     border-bottom: 1px solid var(--cinza);
 }
@@ -382,6 +406,10 @@ select.controlo-formulario {
     background: var(--azul-escuro);
     color: var(--branco);
     font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tabela td {
     font-size: 0.9rem;
 }
 
@@ -394,7 +422,7 @@ select.controlo-formulario {
    ============================================ */
 .etiqueta {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.7rem;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -465,21 +493,26 @@ select.controlo-formulario {
 }
 
 .info-veiculo {
-    padding: 1.25rem;
+    padding: 1rem;
 }
 
 .titulo-veiculo {
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--azul-escuro);
     margin-bottom: 0.5rem;
 }
 
+.info-veiculo p {
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+}
+
 .preco-veiculo {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     color: var(--laranja);
     font-weight: bold;
-    margin: 0.75rem 0;
+    margin: 0.5rem 0;
 }
 
 /* ============================================
@@ -487,7 +520,7 @@ select.controlo-formulario {
    ============================================ */
 .barra-filtros {
     background: var(--branco);
-    padding: 1.25rem;
+    padding: 1rem;
     border-radius: 12px;
     margin-bottom: 1.5rem;
     display: flex;
@@ -499,7 +532,7 @@ select.controlo-formulario {
 
 .grupo-filtro {
     flex: 1;
-    min-width: 150px;
+    min-width: 160px;
 }
 
 /* ============================================
@@ -527,7 +560,7 @@ select.controlo-formulario {
     background: var(--branco);
     border-radius: 16px;
     width: 90%;
-    max-width: 500px;
+    max-width: 520px;
     max-height: 90vh;
     overflow-y: auto;
     animation: modalEntrar 0.3s ease;
@@ -545,7 +578,7 @@ select.controlo-formulario {
 }
 
 .cabecalho-modal {
-    padding: 1.25rem;
+    padding: 1.2rem 1.5rem;
     border-bottom: 1px solid var(--cinza);
     display: flex;
     justify-content: space-between;
@@ -554,7 +587,7 @@ select.controlo-formulario {
 
 .cabecalho-modal h3 {
     color: var(--azul-escuro);
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 .fechar-modal {
@@ -566,15 +599,15 @@ select.controlo-formulario {
 }
 
 .corpo-modal {
-    padding: 1.25rem;
+    padding: 1.2rem 1.5rem;
 }
 
 .rodape-modal {
-    padding: 1.25rem;
+    padding: 1rem 1.5rem;
     border-top: 1px solid var(--cinza);
     display: flex;
     justify-content: flex-end;
-    gap: 0.75rem;
+    gap: 0.8rem;
 }
 
 /* ============================================
@@ -584,7 +617,7 @@ select.controlo-formulario {
     position: fixed;
     top: 20px;
     right: 20px;
-    padding: 1rem 1.25rem;
+    padding: 0.9rem 1.2rem;
     border-radius: 10px;
     background: var(--branco);
     box-shadow: var(--sombra-grande);
@@ -592,7 +625,8 @@ select.controlo-formulario {
     animation: notificacaoEntrar 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.8rem;
+    font-size: 0.9rem;
 }
 
 .notificacao.sucesso {
@@ -627,7 +661,7 @@ select.controlo-formulario {
    ============================================ */
 .metodos-pagamento {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
@@ -635,7 +669,7 @@ select.controlo-formulario {
 .metodo-pagamento {
     border: 2px solid var(--cinza);
     border-radius: 12px;
-    padding: 1rem;
+    padding: 0.9rem;
     text-align: center;
     cursor: pointer;
     transition: var(--transicao);
@@ -668,6 +702,7 @@ select.controlo-formulario {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
+    font-size: 0.9rem;
 }
 
 .linha-resumo.total {
@@ -688,7 +723,7 @@ select.controlo-formulario {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: 1.5rem;
 }
 
 .caixa-auth {
@@ -696,13 +731,13 @@ select.controlo-formulario {
     border-radius: 20px;
     padding: 2rem;
     width: 100%;
-    max-width: 450px;
+    max-width: 440px;
     box-shadow: var(--sombra-grande);
 }
 
 .cabecalho-auth {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .cabecalho-auth h2 {
@@ -720,11 +755,15 @@ select.controlo-formulario {
    ============================================ */
 @media (max-width: 992px) {
     .grade-veiculos {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
     }
 }
 
 @media (max-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+    
     .barra-lateral {
         transform: translateX(-100%);
     }
@@ -759,8 +798,8 @@ select.controlo-formulario {
     
     .tabela th,
     .tabela td {
-        padding: 0.75rem;
-        font-size: 0.85rem;
+        padding: 0.7rem;
+        font-size: 0.8rem;
     }
 }
 
@@ -771,7 +810,7 @@ select.controlo-formulario {
     
     .cartao-cabecalho {
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.8rem;
     }
     
     .btn {
@@ -820,8 +859,11 @@ select.controlo-formulario {
     width: 100%;
     transition: background 0.3s ease;
     margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .btn-ver-detalhes:hover {
     background: #FF8C00;
 }
+

@@ -1,0 +1,16 @@
+# Arquitectura e Stack Tecnológica
+
+## Padrão Arquitectónico
+
+Padrão: MVC (Model-View-Controller)
+
+## Stack Tecnológica
+
+Camada - Tecnologia 
+Frontend - HTML5, CSS3, JavaScript
+Backend - PHP 8.x com PDO
+Base de Dados - MySQL
+Servidor - Apache (XAMPP)
+Controlo versões - Git + GitHub 
+
+## Diagrama de Arquitectura

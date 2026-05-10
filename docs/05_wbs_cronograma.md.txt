@@ -1,0 +1,40 @@
+#WBS e Cronograma
+
+1.0 SIGAV - Sistema de Aluguer de Viaturas
+│
+├── 1.1 Iniciação e Requisitos (Semanas 1-3)
+│ ├── 1.1.1 Definição do problema
+│ ├── 1.1.2 Requisitos (RF/RNF)
+│ ├── 1.1.3 Backlog (15+ US)
+│ ├── 1.1.4 WBS e Cronograma
+│ └── 1.1.5 Matriz de Riscos
+│
+├── 1.2 Arquitectura e Modelagem (Semana 4)
+│ ├── 1.2.1 Arquitectura (MVC)
+│ ├── 1.2.2 Casos de uso UML
+│ └── 1.2.3 Protótipos wireframes
+│
+├── 1.3 Implementação - Incremento 1 (Semanas 5-7)
+│ ├── 1.3.1 Base de dados
+│ ├── 1.3.2 Autenticação
+│ ├── 1.3.3 Catálogo de viaturas
+│ ├── 1.3.4 Reservas
+│ └── 1.3.5 Dashboards
+│
+└── 1.4 Implementação - Incremento 2 (Semanas 9-11)
+├── 1.4.1 Pagamentos
+└── 1.4.2 Relatórios avançados
+
+
+
+## Cronograma Macro
+
+ Semana  Marco  Entregas 
+
+3    Requisitos validados     RF/RNF,Backlog, WBS, Riscos 
+4    Arquitectura e UML       Diagramas, protótipos 
+7    Incremento 1             MVP funcional 
+8    **Teste 1 + Demo**       Apresentação 
+13   Apresentação Parcial 1   10% da nota 
+14   Apresentação Parcial 2   10% da nota
+16   Apresentação Final       20% da nota 

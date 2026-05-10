@@ -1,0 +1,41 @@
+# 📊 Diagrama de Casos de Uso
+
+## Actores
+
+| Actor | Descrição |
+|-------|-----------|
+| Cliente | Utilizador que aluga viaturas |
+| Funcionário | Atendente da loja |
+| Administrador | Gestor do sistema |
+
+## Especificações Textuais
+
+### UC01 - Fazer Login
+
+| Elemento | Descrição |
+|----------|-----------|
+| **Nome** | Fazer Login |
+| **Actor** | Cliente, Funcionário, Administrador |
+| **Pré-condição** | Utilizador tem conta registada |
+| **Pós-condição** | Utilizador autenticado |
+| **Fluxo Principal** | 1. Insere email e senha<br>2. Sistema valida<br>3. Redireciona conforme perfil |
+
+### UC02 - Fazer Reserva
+
+| Elemento | Descrição |
+|----------|-----------|
+| **Nome** | Fazer Reserva |
+| **Actor** | Cliente |
+| **Pré-condição** | Cliente logado, viatura disponível |
+| **Pós-condição** | Reserva criada |
+| **Fluxo Principal** | 1. Escolhe viatura<br>2. Seleciona datas<br>3. Confirma reserva |
+
+### UC03 - Confirmar Reserva
+
+| Elemento | Descrição |
+|----------|-----------|
+| **Nome** | Confirmar Reserva |
+| **Actor** | Funcionário |
+| **Pré-condição** | Existe reserva pendente |
+| **Pós-condição** | Reserva confirmada |
+| **Fluxo Principal** | 1. Vê reservas pendentes<br>2. Clica em confirmar<br>3. Sistema atualiza status 
