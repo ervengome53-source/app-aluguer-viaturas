@@ -7,8 +7,9 @@ $database = new Database();
 $db = $database->getConnection();
 $utilizador = Auth::utilizador();
 
-// Buscar reservas do cliente
-$query = "SELECT r.*, v.marca, v.modelo, v.imagem, v.preco_dia 
+// Buscar reservas do cliente com informação de pagamento
+$query = "SELECT r.*, v.marca, v.modelo, v.imagem, v.preco_dia,
+          (SELECT COUNT(*) FROM pagamentos WHERE reserva_id = r.id AND estado = 'confirmado') as tem_pagamento
           FROM reservas r 
           JOIN viaturas v ON r.viatura_id = v.id 
           WHERE r.utilizador_id = :utilizador_id 
@@ -91,6 +92,15 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
             border-radius: 20px;
             font-size: 0.7rem;
         }
+        
+        .etiqueta-sucesso {
+            background: #28a745;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -147,23 +157,30 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
                                 <td><?= $reserva['total_dias'] ?> dias</td>
                                 <td>MZN <?= number_format($reserva['preco_total'], 2) ?></td>
                                 <td>
-                                    <span class="status-<?= $reserva['status'] ?>">
-                                        <?= $reserva['status'] == 'pendente' ? 'Pendente' : ($reserva['status'] == 'confirmada' ? 'Confirmada' : 'Cancelada') ?>
-                                    </span>
-                                 </td>
+                                    <?php if($reserva['status'] == 'pendente'): ?>
+                                        <span class="status-pendente">Pendente</span>
+                                    <?php elseif($reserva['status'] == 'confirmada'): ?>
+                                        <span class="status-confirmada">Confirmada</span>
+                                    <?php else: ?>
+                                        <span class="status-cancelada">Cancelada</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="tabela-acoes">
                                     <?php if($reserva['status'] == 'pendente'): ?>
                                         <button class="btn btn-perigo btn-sm" onclick="cancelarReserva(<?= $reserva['id'] ?>)">
                                             Cancelar
                                         </button>
                                     <?php elseif($reserva['status'] == 'confirmada'): ?>
-                                        <!-- BOTÃO PARA FAZER PAGAMENTO -->
-                                        <a href="pagamentos.php?reserva_id=<?= $reserva['id'] ?>" class="btn-pagamento">
-                                            Pagar Agora
-                                        </a>
+                                        <?php if($reserva['tem_pagamento'] == 0): ?>
+                                            <a href="pagamentos.php?reserva_id=<?= $reserva['id'] ?>" class="btn-pagamento">
+                                                Pagar Agora
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="etiqueta-sucesso">Pago</span>
+                                        <?php endif; ?>
                                     <?php endif; ?>
-                                 </td>
-                             </tr>
+                                </td>
+                            </table>
                             <?php endforeach; ?>
                         </tbody>
                     </table>

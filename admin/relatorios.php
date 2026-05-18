@@ -151,52 +151,6 @@ foreach($receita_mensal as $r) {
         
         <div class="conteudo-principal">
             <?php include '../components/cabecalho.php'; ?>
-			
-			<!-- ============================================ -->
-            <!-- RESUMO FINANCEIRO -->
-            <!-- ============================================ -->
-            <div class="cartao" style="margin-top: 1.5rem;">
-                <div class="cartao-cabecalho">
-                    <h3 class="cartao-titulo">Resumo Financeiro</h3>
-                </div>
-                
-                <div class="grade-estatisticas" style="margin-top: 1rem;">
-                    <div class="cartao-estatistica">
-                        <div class="estatistica-info">
-                            <h3>Receita Total</h3>
-                            <div class="estatistica-numero">MZN <?= number_format($financas['receita_total'] ?? 0, 2) ?></div>
-                        </div>
-                    </div>
-                    <div class="cartao-estatistica">
-                        <div class="estatistica-info">
-                            <h3>Receita Este Mês</h3>
-                            <div class="estatistica-numero">MZN <?= number_format($financas['receita_mes'] ?? 0, 2) ?></div>
-                        </div>
-                    </div>
-                    <div class="cartao-estatistica">
-                        <div class="estatistica-info">
-                            <h3>Total Multas</h3>
-                            <div class="estatistica-numero">MZN <?= number_format($multas['total_multas'] ?? 0, 2) ?></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="grade-estatisticas">
-                    <div class="cartao-estatistica">
-                        <div class="estatistica-info">
-                            <h3>Total Transações</h3>
-                            <div class="estatistica-numero"><?= $financas['total_transacoes'] ?? 0 ?></div>
-                        </div>
-                    </div>
-                    <div class="cartao-estatistica">
-                        <div class="estatistica-info">
-                            <h3>Valor Pendente</h3>
-                            <div class="estatistica-numero">MZN <?= number_format($financas['valor_pendente'] ?? 0, 2) ?></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <!-- ============================================ -->
             <!-- TOP VIATURAS E CLIENTES -->
             <!-- ============================================ -->

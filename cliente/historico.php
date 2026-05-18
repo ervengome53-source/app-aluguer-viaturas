@@ -47,26 +47,9 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
         <div class="conteudo-principal">
             <?php include '../components/cabecalho.php'; ?>
             
-            <div class="grade-estatisticas">
-                <div class="cartao-estatistica">
-                    <div class="estatistica-info">
-                        <h3>Total de Aluguer</h3>
-                        <div class="estatistica-numero"> <?= $stats['total_alugueis'] ?? 0 ?></div>
-                    </div>
-                    <div class="estatistica-icone"></div>
-                </div>
-                <div class="cartao-estatistica">
-                    <div class="estatistica-info">
-                        <h3>Total Gasto</h3>
-                        <div class="estatistica-numero">MZN <?= number_format($stats['total_gasto'] ?? 0, 2) ?></div>
-                    </div>
-                    <div class="estatistica-icone"></div>
-                </div>
-            </div>
-            
             <div class="cartao">
                 <div class="cartao-cabecalho">
-                    <h3 class="cartao-titulo"> Histórico de Aluguer</h3>
+                    <h3 class="cartao-titulo">Histórico de Aluguer</h3>
                 </div>
                 
                 <?php if(count($historico) > 0): ?>

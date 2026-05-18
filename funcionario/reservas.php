@@ -127,22 +127,16 @@ $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </span>
                                 </td>
                                 <td class="tabela-acoes">
-                                    <?php if($reserva['status'] == 'pendente'): ?>
-                                        <a href="?confirmar=<?= $reserva['id'] ?>&filtro=<?= $filtro ?>" class="btn btn-sucesso btn-sm" onclick="return confirm('Confirmar esta reserva?')">
-                                            Confirmar
-                                        </a>
-                                        <a href="?rejeitar=<?= $reserva['id'] ?>&filtro=<?= $filtro ?>" class="btn btn-perigo btn-sm" onclick="return confirm('Rejeitar esta reserva?')">
-                                            Rejeitar
-                                        </a>
-                                    <?php elseif($reserva['status'] == 'confirmada'): ?>
-                                        <a href="aluguer.php?reserva_id=<?= $reserva['id'] ?>" class="btn btn-info btn-sm">
-                                            Iniciar Aluguer
-                                        </a>
-                                    <?php endif; ?>
-                                    <a href="detalhe_reserva.php?id=<?= $reserva['id'] ?>" class="btn btn-info btn-sm">
-                                         Detalhes
-                                    </a>
-                                </td>
+									<button class="btn btn-sucesso btn-sm" onclick="confirmarReserva(<?= $reserva['id'] ?>)">
+										Confirmar
+									</button>
+									<button class="btn btn-perigo btn-sm" onclick="rejeitarReserva(<?= $reserva['id'] ?>)">
+										Rejeitar
+									</button>
+									<a href="detalhe_reserva.php?id=<?= $reserva['id'] ?>" class="btn btn-info btn-sm">
+										Detalhes
+									</a>
+								</td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -173,8 +167,23 @@ $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-size: 0.75rem;
         }
     </style>
+	<script>
+    function confirmarReserva(id) {
+        modal.confirmar('Confirmar esta reserva?', () => {
+            window.location.href = `?confirmar=${id}&filtro=<?= $filtro ?>`;
+        });
+    }
+    
+    function rejeitarReserva(id) {
+        modal.confirmar('Rejeitar esta reserva?', () => {
+            window.location.href = `?rejeitar=${id}&filtro=<?= $filtro ?>`;
+        });
+    }
+</script>
     
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/funcionario.js"></script>
+	
+	
 </body>
 </html>

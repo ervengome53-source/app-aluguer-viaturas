@@ -222,7 +222,7 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
                             </div>
                         </div>
                         <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">
-                            📝 <?= htmlspecialchars($p['descricao']) ?>
+                            <?= htmlspecialchars($p['descricao']) ?>
                         </div>
                     </div>
                     <?php endforeach; ?>

@@ -148,7 +148,6 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </span>
                                 </td>
                                 <td class="tabela-acoes">
-									<a href="editar_cliente.php?id=<?= $cliente['id'] ?>" class="btn btn-info btn-sm">Editar</a>
 									<a href="historico_cliente.php?id=<?= $cliente['id'] ?>" class="btn btn-destaque btn-sm">Histórico</a>
 								</td>
                             <?php endforeach; ?>

@@ -41,7 +41,7 @@ if($aluguer) {
     $hoje = new DateTime();
     if($hoje > $data_fim) {
         $dias_atraso = $data_fim->diff($hoje)->days;
-        $multa = $dias_atraso * 25; // Multa de 25€ por dia
+        $multa = $dias_atraso * 25;
     }
 }
 
@@ -55,7 +55,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $db->beginTransaction();
     
     try {
-        // Atualizar aluguer
         $query = "UPDATE alugueis SET status = 'finalizado', data_devolucao = NOW(), 
                   observacoes = CONCAT(observacoes, ' / Devolução: ', :observacoes),
                   multa_atraso = :multa
@@ -66,13 +65,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bindParam(':id', $aluguer_id);
         $stmt->execute();
         
-        // Atualizar status da viatura para disponível
         $query = "UPDATE viaturas SET status = 'disponivel' WHERE id = (SELECT viatura_id FROM alugueis WHERE id = :id)";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':id', $aluguer_id);
         $stmt->execute();
         
-        // Registrar multa se houver
         if($multa > 0) {
             $query = "INSERT INTO multas (aluguer_id, utilizador_id, valor, motivo, status) 
                       VALUES (:aluguer_id, :utilizador_id, :valor, :motivo, 'pendente')";
@@ -84,7 +81,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute();
         }
         
-        // Registrar dano se houver
         if($dano_reportado) {
             $query = "INSERT INTO viaturas_danos (aluguer_id, viatura_id, descricao, data_registo) 
                       VALUES (:aluguer_id, :viatura_id, :descricao, NOW())";
@@ -114,6 +110,62 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Registar Devolução - Funcionário</title>
     <link rel="stylesheet" href="../assets/css/estilo.css">
     <link rel="stylesheet" href="../assets/css/funcionario.css">
+    <style>
+        .aluguer-lista { display: grid; gap: 1rem; }
+        .aluguer-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--cinza-claro);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transicao);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .aluguer-card:hover {
+            background: rgba(255, 140, 0, 0.1);
+            transform: translateX(5px);
+        }
+        .aluguer-detalhes {
+            background: var(--cinza-claro);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .detalhes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+        .calculo-multa {
+            background: var(--perigo);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .alerta-sucesso {
+            background: var(--sucesso);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 768px) {
+            .detalhes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container-app">
@@ -132,7 +184,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <div class="cartao">
                 <div class="cartao-cabecalho">
-                    <h3 class="cartao-titulo"> Registar Devolução</h3>
+                    <h3 class="cartao-titulo">Registar Devolução</h3>
                 </div>
                 
                 <?php if(!$aluguer && count($alugueis_ativos) > 0): ?>
@@ -161,7 +213,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <?php elseif($aluguer): ?>
                 
-                <form method="POST" class="form-devolucao">
+                <form method="POST" class="form-devolucao" id="formDevolucao">
                     <input type="hidden" name="aluguer_id" value="<?= $aluguer['id'] ?>">
                     
                     <div class="aluguer-detalhes">
@@ -177,7 +229,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     
                     <?php if($dias_atraso > 0): ?>
                     <div class="calculo-multa">
-                        <h4> Multa por Atraso</h4>
+                        <h4>Multa por Atraso</h4>
                         <p>Dias de atraso: <strong><?= $dias_atraso ?></strong> dias</p>
                         <p>Valor da multa: <strong>MZN <?= number_format($multa, 2) ?></strong></p>
                         <div class="grupo-formulario">
@@ -189,7 +241,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <?php else: ?>
                     <div class="alerta-sucesso">
-                         Devolução dentro do prazo. Sem multas aplicadas.
+                        Devolução dentro do prazo. Sem multas aplicadas.
                     </div>
                     <?php endif; ?>
                     
@@ -214,7 +266,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     
                     <div class="form-actions">
                         <button type="button" class="btn btn-secundario" onclick="window.location.href='dashboard.php'">Cancelar</button>
-                        <button type="submit" class="btn btn-destaque"> Confirmar Devolução</button>
+                        <button type="button" class="btn btn-destaque" onclick="confirmarDevolucao()">Confirmar Devolução</button>
                     </div>
                 </form>
                 
@@ -230,74 +282,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
     
-    <style>
-        .aluguer-lista {
-            display: grid;
-            gap: 1rem;
-        }
-        
-        .aluguer-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--cinza-claro);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transicao);
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .aluguer-card:hover {
-            background: rgba(255, 140, 0, 0.1);
-            transform: translateX(5px);
-        }
-        
-        .aluguer-detalhes {
-            background: var(--cinza-claro);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-        
-        .detalhes-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.5rem;
-        }
-        
-        .calculo-multa {
-            background: var(--perigo);
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-        
-        .alerta-sucesso {
-            background: var(--sucesso);
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            text-align: center;
-        }
-        
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        @media (max-width: 768px) {
-            .detalhes-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-    
     <script>
         document.getElementById('estado_veiculo')?.addEventListener('change', function() {
             const divDanos = document.getElementById('div_danos');
@@ -305,6 +289,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 divDanos.style.display = this.value === 'dano' || this.value === 'regular' ? 'block' : 'none';
             }
         });
+        
+        function confirmarDevolucao() {
+            modal.confirmar('Tem certeza que deseja confirmar esta devolução?', () => {
+                document.getElementById('formDevolucao').submit();
+            });
+        }
     </script>
     
     <script src="../assets/js/main.js"></script>
