@@ -230,8 +230,8 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
 
         .card-header {
             padding: 1.2rem 1.5rem;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
+            background: white;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -242,6 +242,7 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
         .card-header h3 {
             font-size: 1rem;
             font-weight: 600;
+            color: #1a1a2e;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -272,12 +273,12 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
         }
 
         .btn-filter-inactive {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: #f0f2f5;
+            color: #666;
         }
 
         .btn-filter-inactive:hover {
-            background: rgba(255,255,255,0.3);
+            background: #e0e0e0;
             transform: translateY(-2px);
         }
 
@@ -302,6 +303,7 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #eee;
+            background: white;
         }
 
         .modern-table td {
@@ -309,6 +311,7 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
             border-bottom: 1px solid #f0f0f0;
             font-size: 0.85rem;
             vertical-align: middle;
+            background: white;
         }
 
         .modern-table tr:last-child td {
@@ -676,8 +679,9 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
                                     <i class="fas fa-arrow-right"></i> até <?= date('d/m/Y', strtotime($reserva['data_fim'])) ?><br>
                                     <small><?= $reserva['total_dias'] ?> dias</small>
                                 </td>
-                                <td class="price">MZN <?= number_format($reserva['preco_total'], 2) ?></td>
-                                <td>
+                                <td class="price">MZN <?= number_format($reserva['preco_total'], 2) ?>
+								                                <td class="price">MZN <?= number_format($reserva['preco_total'], 2) ?></td>
+                                <tr>
                                     <?php if($reserva['status'] == 'pendente'): ?>
                                         <span class="badge badge-pendente"><i class="fas fa-clock"></i> Pendente</span>
                                     <?php elseif($reserva['status'] == 'confirmada'): ?>
@@ -685,7 +689,7 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
                                     <?php else: ?>
                                         <span class="badge badge-rejeitada"><i class="fas fa-times-circle"></i> Rejeitada</span>
                                     <?php endif; ?>
-                                </td>
+                                 </td>
                                 <td class="acoes-cell">
                                     <?php if($reserva['status'] == 'pendente'): ?>
                                         <button class="btn-sm btn-success" onclick="abrirModalConfirmar(<?= $reserva['id'] ?>, '<?= htmlspecialchars($reserva['cliente_nome']) ?>', '<?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?>', '<?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?>', '<?= date('d/m/Y', strtotime($reserva['data_fim'])) ?>', <?= $reserva['preco_total'] ?>)">
@@ -699,10 +703,10 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
                                         <i class="fas fa-eye"></i> Detalhes
                                     </a>
                                 </td>
-                            </tr>
+                             </tr>
                             <?php endforeach; ?>
                         </tbody>
-                     </table>
+                    </table>
                     <?php else: ?>
                     <div class="empty-state">
                         <i class="fas fa-inbox"></i>

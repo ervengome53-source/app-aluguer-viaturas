@@ -179,8 +179,8 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
         
         .card-header {
             padding: 1.2rem 1.5rem;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
+            background: white;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -191,6 +191,7 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
         .card-header h2 {
             font-size: 1rem;
             font-weight: 600;
+            color: #1a1a2e;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -205,11 +206,16 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
         
         .search-input {
             padding: 0.5rem 1rem;
-            border: none;
+            border: 1px solid #ddd;
             border-radius: 0.8rem;
             font-size: 0.85rem;
             width: 220px;
             outline: none;
+            background: white;
+        }
+        
+        .search-input:focus {
+            border-color: #FF8C00;
         }
         
         .btn-search {
@@ -290,6 +296,7 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #eee;
+            background: white;
         }
         
         .modern-table td {
@@ -297,6 +304,7 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
             border-bottom: 1px solid #f0f0f0;
             font-size: 0.85rem;
             vertical-align: middle;
+            background: white;
         }
         
         .modern-table tr:last-child td {
@@ -830,7 +838,7 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
                     </div>
                     <div class="alert-info">
                         <i class="fas fa-info-circle"></i>
-                        A senha padrão será: <strong>123456</strong>. O cliente deverá alterar no primeiro acesso.
+                        A senha padrão será: <strong>******</strong>. O cliente deverá alterar no primeiro acesso.
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -225,19 +225,20 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-radius: 1.5rem;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .card-header {
             padding: 1.5rem 2rem;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
+            background: white;
+            border-bottom: 1px solid #eee;
         }
 
         .card-header h2 {
             font-size: 1.3rem;
             font-weight: 600;
+            color: #1a1a2e;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -285,6 +286,7 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-size: 0.9rem;
             transition: all 0.3s ease;
             font-family: inherit;
+            width: 100%;
         }
 
         .form-control:focus {
@@ -408,6 +410,15 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             color: #666;
         }
 
+        .btn-trocar {
+            background: #17a2b8;
+            margin-top: 0;
+        }
+
+        .btn-trocar:hover {
+            background: #138496;
+        }
+
         /* Resumo */
         .resumo-card {
             background: linear-gradient(135deg, #f8f9fa, #fff);
@@ -512,7 +523,7 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background: white;
             border-radius: 1.5rem;
             width: 90%;
-            max-width: 550px;
+            max-width: 600px;
             animation: modalFadeIn 0.3s ease;
             overflow: hidden;
         }
@@ -524,8 +535,8 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         .modal-header {
             padding: 1.2rem 1.5rem;
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
+            background: white;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -534,6 +545,7 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .modal-header h3 {
             font-size: 1.1rem;
             font-weight: 600;
+            color: #1a1a2e;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -542,7 +554,7 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .modal-close {
             background: none;
             border: none;
-            color: white;
+            color: #666;
             font-size: 1.3rem;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -550,6 +562,7 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         .modal-close:hover {
             transform: rotate(90deg);
+            color: #dc3545;
         }
 
         .modal-body {
@@ -566,11 +579,16 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         /* Modal Confirmação */
         .modal-confirmacao {
-            max-width: 450px;
+            max-width: 500px;
         }
 
         .modal-confirmacao .modal-header {
-            background: linear-gradient(135deg, #FF8C00, #FF6B00);
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-confirmacao .modal-header h3 {
+            color: #1a1a2e;
         }
 
         .modal-confirmacao .resumo-confirmacao {
@@ -589,20 +607,11 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-size: 0.8rem;
         }
 
-        /* Loading */
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid white;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 0.6s linear infinite;
-            margin-left: 0.5rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
         /* Responsivo */
@@ -621,6 +630,9 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
             .form-group.full-width {
                 grid-column: span 1;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
             }
             .card-body {
                 padding: 1rem;
@@ -671,7 +683,7 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <p><i class="fas fa-envelope"></i> <?= $cliente['email'] ?> | <i class="fas fa-phone"></i> <?= $cliente['telefone'] ?? '---' ?></p>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn-add-cliente" onclick="trocarCliente()" style="background: #17a2b8;">
+                                    <button type="button" class="btn-add-cliente btn-trocar" onclick="trocarCliente()">
                                         <i class="fas fa-exchange-alt"></i> Trocar Cliente
                                     </button>
                                 <?php else: ?>
@@ -757,7 +769,7 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
     
-    <!-- MODAL CADASTRO RÁPIDO DE CLIENTE -->
+    <!-- MODAL CADASTRO RÁPIDO DE CLIENTE (EM BRANCO) -->
     <div id="modalCadastroCliente" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -767,25 +779,34 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <form method="POST" id="formCadastroCliente">
                 <input type="hidden" name="acao" value="cadastrar_cliente">
                 <div class="modal-body">
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label><i class="fas fa-user"></i> Nome Completo *</label>
-                        <input type="text" name="nome" id="cadastro_nome" class="form-control" required>
+                    <?php if(isset($erro_cadastro)): ?>
+                        <div class="alert-info" style="background: #f8d7da; border-left-color: #dc3545; color: #721c24; margin-bottom: 1rem;">
+                            <i class="fas fa-exclamation-circle"></i> <?= $erro_cadastro ?>
+                        </div>
+                    <?php endif; ?>
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label><i class="fas fa-user"></i> Nome Completo *</label>
+                            <input type="text" name="nome" id="cadastro_nome" class="form-control" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label><i class="fas fa-envelope"></i> Email *</label>
+                            <input type="email" name="email" id="cadastro_email" class="form-control" required>
+                        </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label><i class="fas fa-envelope"></i> Email *</label>
-                        <input type="email" name="email" id="cadastro_email" class="form-control" required>
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label><i class="fas fa-phone"></i> Telefone</label>
+                            <input type="tel" name="telefone" id="cadastro_telefone" class="form-control" placeholder="+258 84 123 4567">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label><i class="fas fa-id-card"></i> NUIT</label>
+                            <input type="text" name="nif" id="cadastro_nif" class="form-control" placeholder="Número de identificação fiscal">
+                        </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label><i class="fas fa-phone"></i> Telefone</label>
-                        <input type="tel" name="telefone" id="cadastro_telefone" class="form-control" placeholder="+258 84 123 4567">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label><i class="fas fa-id-card"></i> NUIT</label>
-                        <input type="text" name="nif" id="cadastro_nif" class="form-control" placeholder="Número de identificação fiscal">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 1rem;">
+                    <div class="form-group">
                         <label><i class="fas fa-map-marker-alt"></i> Morada</label>
-                        <textarea name="morada" id="cadastro_morada" class="form-control" rows="2"></textarea>
+                        <textarea name="morada" id="cadastro_morada" class="form-control" rows="2" placeholder="Morada completa do cliente"></textarea>
                     </div>
                     <div class="alert-info">
                         <i class="fas fa-info-circle"></i>
@@ -850,8 +871,8 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- MODAL SUCESSO -->
     <div id="modalSucesso" class="modal">
         <div class="modal-content modal-confirmacao">
-            <div class="modal-header" style="background: linear-gradient(135deg, #28a745, #20c997);">
-                <h3><i class="fas fa-check-circle"></i> Aluguer Registado!</h3>
+            <div class="modal-header" style="background: white; border-bottom: 1px solid #eee;">
+                <h3 style="color: #28a745;"><i class="fas fa-check-circle"></i> Aluguer Registado!</h3>
                 <button class="modal-close" onclick="fecharModalSucesso()">&times;</button>
             </div>
             <div class="modal-body" style="text-align: center;">
@@ -1039,6 +1060,12 @@ $viaturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
         function abrirModalCadastroCliente() {
+            // Limpar o formulário antes de abrir
+            document.getElementById('cadastro_nome').value = '';
+            document.getElementById('cadastro_email').value = '';
+            document.getElementById('cadastro_telefone').value = '';
+            document.getElementById('cadastro_nif').value = '';
+            document.getElementById('cadastro_morada').value = '';
             document.getElementById('modalCadastroCliente').classList.add('active');
         }
         

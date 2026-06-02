@@ -241,8 +241,8 @@ $locais = [
 
         .card-header {
             padding: 1.2rem 1.5rem;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
+            background: white;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -251,16 +251,18 @@ $locais = [
         .card-header h3 {
             font-size: 1rem;
             font-weight: 600;
+            color: #1a1a2e;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .badge-count {
-            background: rgba(255,255,255,0.2);
+            background: #f0f2f5;
             padding: 0.2rem 0.6rem;
             border-radius: 2rem;
             font-size: 0.7rem;
+            color: #666;
         }
 
         /* Tabelas */
@@ -284,6 +286,7 @@ $locais = [
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #eee;
+            background: white;
         }
 
         .modern-table td {
@@ -291,6 +294,7 @@ $locais = [
             border-bottom: 1px solid #f0f0f0;
             font-size: 0.85rem;
             vertical-align: middle;
+            background: white;
         }
 
         .modern-table tr:last-child td {
@@ -484,7 +488,7 @@ $locais = [
                                 <p><i class="fas fa-user"></i> Cliente: <?= htmlspecialchars($v['cliente_nome']) ?></p>
                                 <p><i class="fas fa-calendar"></i> Devolução: <?= date('d/m/Y', strtotime($v['data_fim'])) ?></p>
                                 <p><i class="fas fa-location-dot"></i> Localização: <strong><?= $local ?></strong></p>
-                                <div class="badge badge-atrasado" style="margin-top: 0.5rem; display: inline-flex;">🔴 ALUGADO</div>
+                                <div class="badge badge-atrasado" style="margin-top: 0.5rem; display: inline-flex;"><i class="fas fa-lock"></i> ALUGADO</div>
                             </div>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -528,10 +532,10 @@ $locais = [
                                     </td>
                                     <td>
                                         <button class="btn-sm btn-success" onclick="confirmarReserva(<?= $reserva['id'] ?>)">
-                                            <i class="fas fa-check"></i>
+                                            <i class="fas fa-check"></i> Confirmar
                                         </button>
                                         <button class="btn-sm btn-danger" onclick="rejeitarReserva(<?= $reserva['id'] ?>)">
-                                            <i class="fas fa-times"></i>
+                                            <i class="fas fa-times"></i> Rejeitar
                                         </button>
                                     </td>
                                 </tr>
@@ -572,7 +576,7 @@ $locais = [
                                     <td>
                                         <?= date('d/m/Y', strtotime($aluguer['data_fim'])) ?>
                                         <?php if($atrasado): ?>
-                                            <span class="badge badge-atrasado" style="margin-left: 0.5rem;">Atrasado</span>
+                                            <span class="badge badge-atrasado" style="margin-left: 0.5rem;"><i class="fas fa-exclamation-triangle"></i> Atrasado</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -608,7 +612,6 @@ $locais = [
                             <?php foreach($proximas_devolucoes as $devolucao): ?>
                             <?php 
                             $dias_restantes = ceil((strtotime($devolucao['data_fim']) - time()) / 86400);
-                            $classe_urgente = $dias_restantes <= 1 ? 'badge-atrasado' : '';
                             ?>
                             <tr>
                                 <td>
@@ -621,7 +624,7 @@ $locais = [
                                 <td>
                                     <?= date('d/m/Y', strtotime($devolucao['data_fim'])) ?>
                                     <?php if($dias_restantes <= 1): ?>
-                                        <span class="badge badge-atrasado" style="margin-left: 0.5rem;">Urgente</span>
+                                        <span class="badge badge-atrasado" style="margin-left: 0.5rem;"><i class="fas fa-exclamation-triangle"></i> Urgente</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
