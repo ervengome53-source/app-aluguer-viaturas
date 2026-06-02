@@ -414,8 +414,8 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
         
         .modal-header {
             padding: 1.2rem 1.5rem;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
+            background: white;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -424,6 +424,7 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
         .modal-header h3 {
             font-size: 1.1rem;
             font-weight: 600;
+            color: #1a1a2e;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -432,7 +433,7 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
         .modal-close {
             background: none;
             border: none;
-            color: white;
+            color: #666;
             font-size: 1.3rem;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -440,6 +441,7 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
         
         .modal-close:hover {
             transform: rotate(90deg);
+            color: #dc3545;
         }
         
         .modal-body {
@@ -802,7 +804,7 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
         </div>
     </div>
     
-    <!-- MODAL NOVO CLIENTE -->
+    <!-- MODAL NOVO CLIENTE (SEM AZUL ESCURO) -->
     <div id="modalNovoCliente" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -815,11 +817,11 @@ $clientes_inativos = $total_clientes - $clientes_ativos;
                     <div class="form-row">
                         <div class="form-group">
                             <label><i class="fas fa-user"></i> Nome Completo *</label>
-                            <input type="text" name="nome" class="form-control" required>
+                            <input type="text" name="nome" class="form-control" required placeholder="Ex: João Silva">
                         </div>
                         <div class="form-group">
                             <label><i class="fas fa-envelope"></i> Email *</label>
-                            <input type="email" name="email" class="form-control" required>
+                            <input type="email" name="email" class="form-control" required placeholder="exemplo@email.com">
                         </div>
                     </div>
                     <div class="form-row">
