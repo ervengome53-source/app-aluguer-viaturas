@@ -86,11 +86,14 @@ $metodosAtivos = explode(',', $config['metodos_ativos'] ?? '');
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações de Pagamento - Admin</title>
     <link rel="stylesheet" href="../assets/css/estilo.css">
     <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container-app">
@@ -100,62 +103,62 @@ $metodosAtivos = explode(',', $config['metodos_ativos'] ?? '');
             <?php include '../components/cabecalho.php'; ?>
             
             <?php if($mensagem): ?>
-                <div class="notificacao sucesso"><?= $mensagem ?></div>
+                <div class="notificacao sucesso"><i class="fas fa-check-circle"></i> <?= $mensagem ?></div>
             <?php endif; ?>
             
             <?php if($erro): ?>
-                <div class="notificacao erro"><?= $erro ?></div>
+                <div class="notificacao erro"><i class="fas fa-exclamation-triangle"></i> <?= $erro ?></div>
             <?php endif; ?>
             
             <div class="cartao">
                 <div class="cartao-cabecalho">
-                    <h3 class="cartao-titulo"> Configurações de Pagamento</h3>
+                    <h3 class="cartao-titulo"><i class="fas fa-credit-card"></i> Configurações de Pagamento</h3>
                 </div>
                 
                 <form method="POST" class="form-config-pagamentos">
                     <div class="config-section">
-                        <h4> Métodos de Pagamento Ativos</h4>
+                        <h4><i class="fas fa-bolt"></i> Métodos de Pagamento Ativos</h4>
                         <div class="metodos-grid">
                             <label class="metodo-checkbox">
                                 <input type="checkbox" name="metodos[]" value="dinheiro" 
                                        <?= in_array('dinheiro', $metodosAtivos) ? 'checked' : '' ?>>
-                                <span class="metodo-nome"> Dinheiro</span>
+                                <span class="metodo-nome"><i class="fas fa-money-bill-wave"></i> Dinheiro</span>
                             </label>
                             <label class="metodo-checkbox">
                                 <input type="checkbox" name="metodos[]" value="cartao_credito" 
                                        id="chk_cartao" <?= in_array('cartao_credito', $metodosAtivos) ? 'checked' : '' ?>>
-                                <span class="metodo-nome"> Cartão Crédito/Débito</span>
+                                <span class="metodo-nome"><i class="fas fa-credit-card"></i> Cartão Crédito/Débito</span>
                             </label>
                             <label class="metodo-checkbox">
                                 <input type="checkbox" name="metodos[]" value="mbway" 
                                        id="chk_mbway" <?= in_array('mbway', $metodosAtivos) ? 'checked' : '' ?>>
-                                <span class="metodo-nome"> MB WAY</span>
+                                <span class="metodo-nome"><i class="fas fa-mobile-alt"></i> MB WAY</span>
                             </label>
                             <label class="metodo-checkbox">
                                 <input type="checkbox" name="metodos[]" value="transferencia" 
                                        id="chk_transferencia" <?= in_array('transferencia', $metodosAtivos) ? 'checked' : '' ?>>
-                                <span class="metodo-nome"> Transferência Bancária</span>
+                                <span class="metodo-nome"><i class="fas fa-university"></i> Transferência Bancária</span>
                             </label>
                             <label class="metodo-checkbox">
                                 <input type="checkbox" name="metodos[]" value="paypal" 
                                        id="chk_paypal" <?= in_array('paypal', $metodosAtivos) ? 'checked' : '' ?>>
-                                <span class="metodo-nome"> PayPal</span>
+                                <span class="metodo-nome"><i class="fab fa-paypal"></i> PayPal</span>
                             </label>
                         </div>
                     </div>
                     
                     <div class="config-section" id="section_mbway">
-                        <h4> Configurações MB WAY</h4>
+                        <h4><i class="fas fa-mobile-alt"></i> Configurações MB WAY</h4>
                         <div class="form-row">
                             <div class="grupo-formulario">
                                 <label class="rotulo-formulario">
                                     <input type="checkbox" name="mbway_ativado" value="1" 
                                            <?= ($config['mbway_ativado'] ?? 0) ? 'checked' : '' ?>>
-                                    Ativar MB WAY
+                                    <i class="fas fa-toggle-on"></i> Ativar MB WAY
                                 </label>
                             </div>
                             <div class="grupo-formulario">
-                                <label class="rotulo-formulario">Valor Máximo por Transação (€)</label>
+                                <label class="rotulo-formulario"><i class="fas fa-euro-sign"></i> Valor Máximo por Transação (€)</label>
                                 <input type="number" step="1" name="mbway_valor_maximo" class="controlo-formulario" 
                                        value="<?= $config['mbway_valor_maximo'] ?? 500 ?>">
                             </div>
@@ -163,50 +166,50 @@ $metodosAtivos = explode(',', $config['metodos_ativos'] ?? '');
                     </div>
                     
                     <div class="config-section" id="section_cartao">
-                        <h4> Configurações Cartão</h4>
+                        <h4><i class="fas fa-credit-card"></i> Configurações Cartão</h4>
                         <div class="form-row">
                             <div class="grupo-formulario">
                                 <label class="rotulo-formulario">
                                     <input type="checkbox" name="cartao_credito_ativado" value="1" 
                                            <?= ($config['cartao_credito_ativado'] ?? 0) ? 'checked' : '' ?>>
-                                    Ativar Pagamento com Cartão
+                                    <i class="fas fa-toggle-on"></i> Ativar Pagamento com Cartão
                                 </label>
                             </div>
                             <div class="grupo-formulario">
-                                <label class="rotulo-formulario">Taxa Cartão (%)</label>
+                                <label class="rotulo-formulario"><i class="fas fa-percent"></i> Taxa Cartão (%)</label>
                                 <input type="number" step="0.01" name="cartao_taxa" class="controlo-formulario" 
                                        value="<?= $config['cartao_taxa'] ?? 2.5 ?>">
-                                <small>Taxa cobrada pelo gateway de pagamento</small>
+                                <small><i class="fas fa-info-circle"></i> Taxa cobrada pelo gateway de pagamento</small>
                             </div>
                         </div>
                     </div>
                     
                     <div class="config-section" id="section_transferencia">
-                        <h4>Dados Bancários</h4>
+                        <h4><i class="fas fa-university"></i> Dados Bancários</h4>
                         <div class="form-row">
                             <div class="grupo-formulario">
                                 <label class="rotulo-formulario">
                                     <input type="checkbox" name="transferencia_ativada" value="1" 
                                            <?= ($config['transferencia_ativada'] ?? 0) ? 'checked' : '' ?>>
-                                    Ativar Transferência Bancária
+                                    <i class="fas fa-toggle-on"></i> Ativar Transferência Bancária
                                 </label>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="grupo-formulario">
-                                <label class="rotulo-formulario">Nome do Banco</label>
+                                <label class="rotulo-formulario"><i class="fas fa-building"></i> Nome do Banco</label>
                                 <input type="text" name="banco_nome" class="controlo-formulario" 
                                        value="<?= htmlspecialchars($config['banco_nome'] ?? '') ?>">
                             </div>
                             <div class="grupo-formulario">
-                                <label class="rotulo-formulario">IBAN</label>
+                                <label class="rotulo-formulario"><i class="fas fa-barcode"></i> IBAN</label>
                                 <input type="text" name="banco_iban" class="controlo-formulario" 
                                        value="<?= htmlspecialchars($config['banco_iban'] ?? '') ?>">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="grupo-formulario">
-                                <label class="rotulo-formulario">SWIFT\/BIC</label>
+                                <label class="rotulo-formulario"><i class="fas fa-code"></i> SWIFT/BIC</label>
                                 <input type="text" name="banco_swift" class="controlo-formulario" 
                                        value="<?= htmlspecialchars($config['banco_swift'] ?? '') ?>">
                             </div>
@@ -214,17 +217,17 @@ $metodosAtivos = explode(',', $config['metodos_ativos'] ?? '');
                     </div>
                     
                     <div class="config-section" id="section_paypal">
-                        <h4>Configurações PayPal</h4>
+                        <h4><i class="fab fa-paypal"></i> Configurações PayPal</h4>
                         <div class="form-row">
                             <div class="grupo-formulario">
                                 <label class="rotulo-formulario">
                                     <input type="checkbox" name="paypal_ativado" value="1" 
                                            <?= ($config['paypal_ativado'] ?? 0) ? 'checked' : '' ?>>
-                                    Ativar PayPal
+                                    <i class="fas fa-toggle-on"></i> Ativar PayPal
                                 </label>
                             </div>
                             <div class="grupo-formulario">
-                                <label class="rotulo-formulario">Email PayPal</label>
+                                <label class="rotulo-formulario"><i class="fas fa-envelope"></i> Email PayPal</label>
                                 <input type="email" name="paypal_email" class="controlo-formulario" 
                                        value="<?= htmlspecialchars($config['paypal_email'] ?? '') ?>">
                             </div>
@@ -232,24 +235,24 @@ $metodosAtivos = explode(',', $config['metodos_ativos'] ?? '');
                     </div>
                     
                     <div class="config-section">
-                        <h4> Gateway de Pagamento (Stripe)</h4>
+                        <h4><i class="fas fa-cloud-upload-alt"></i> Gateway de Pagamento (Stripe)</h4>
                         <div class="form-row">
                             <div class="grupo-formulario">
-                                <label class="rotulo-formulario">Stripe Public Key</label>
+                                <label class="rotulo-formulario"><i class="fas fa-key"></i> Stripe Public Key</label>
                                 <input type="text" name="stripe_public_key" class="controlo-formulario" 
                                        value="<?= htmlspecialchars($config['stripe_public_key'] ?? '') ?>">
                             </div>
                             <div class="grupo-formulario">
-                                <label class="rotulo-formulario">Stripe Secret Key</label>
+                                <label class="rotulo-formulario"><i class="fas fa-lock"></i> Stripe Secret Key</label>
                                 <input type="password" name="stripe_secret_key" class="controlo-formulario" 
                                        value="<?= htmlspecialchars($config['stripe_secret_key'] ?? '') ?>">
                             </div>
                         </div>
-                        <small>Configure as chaves da API Stripe para processar pagamentos com cartão</small>
+                        <small><i class="fas fa-info-circle"></i> Configure as chaves da API Stripe para processar pagamentos com cartão</small>
                     </div>
                     
                     <div class="form-actions" style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                        <button type="submit" class="btn btn-primario"> Guardar Configurações</button>
+                        <button type="submit" class="btn btn-primario"><i class="fas fa-save"></i> Guardar Configurações</button>
                     </div>
                 </form>
             </div>

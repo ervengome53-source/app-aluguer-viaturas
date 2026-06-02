@@ -1,8 +1,3 @@
--- ============================================
--- SISTEMA DE GESTÃO DE ALUGUER DE VIATURAS
--- BASE DE DADOS COMPLETA (VERSÃO FINAL CORRIGIDA)
--- ============================================
-
 -- Criar Base de Dados
 DROP DATABASE IF EXISTS sistema_aluguer;
 CREATE DATABASE IF NOT EXISTS sistema_aluguer;

@@ -33,7 +33,6 @@ switch($method) {
             $stmt->execute();
             $pagamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            // Estatísticas
             $stats = [
                 'total_pagamentos' => count($pagamentos),
                 'total_pago' => array_sum(array_column($pagamentos, 'valor')),
@@ -52,4 +51,30 @@ switch($method) {
                       FROM pagamentos";
             $stmt = $db->prepare($query);
             $stmt->execute();
-            $k
+            $kpis = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            echo json_encode(['sucesso' => true, 'dados' => $kpis]);
+        }
+        break;
+        
+    case 'POST':
+        $dados = json_decode(file_get_contents('php://input'), true);
+        
+        if($acao == 'confirmar' && isset($_SESSION['utilizador_id'])) {
+            $pagamento_id = $dados['pagamento_id'];
+            $query = "UPDATE pagamentos SET estado = 'confirmado', data_pagamento = NOW() WHERE id = :id";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':id', $pagamento_id);
+            
+            if($stmt->execute()) {
+                echo json_encode(['sucesso' => true, 'mensagem' => 'Pagamento confirmado']);
+            } else {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao confirmar']);
+            }
+        }
+        break;
+        
+    default:
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Método não suportado']);
+}
+?>

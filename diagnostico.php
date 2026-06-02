@@ -1,5 +1,5 @@
 <?php
-echo "<h1>🔍 DIAGNÓSTICO COMPLETO DO SISTEMA</h1>";
+echo "<h1>DIAGNÓSTICO COMPLETO DO SISTEMA</h1>";
 
 // 1. Verificar conexão com banco
 echo "<h2>1. Conexão com Banco de Dados</h2>";
@@ -7,9 +7,9 @@ try {
     require_once 'config/database.php';
     $database = new Database();
     $db = $database->getConnection();
-    echo "✅ Conexão com banco de dados OK!<br>";
+    echo "Conexão com banco de dados OK!<br>";
 } catch(Exception $e) {
-    echo "❌ Erro de conexão: " . $e->getMessage() . "<br>";
+    echo "Erro de conexão: " . $e->getMessage() . "<br>";
     exit();
 }
 
@@ -36,7 +36,7 @@ if(count($contas) > 0) {
     }
     echo "</table>";
 } else {
-    echo "❌ Nenhuma conta admin ou funcionário encontrada!<br>";
+    echo "Nenhuma conta admin ou funcionário encontrada!<br>";
 }
 
 // 3. Testar senha específica
@@ -51,12 +51,12 @@ $stmt->execute();
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if($user) {
-    echo "✅ Utilizador encontrado: {$user['nome']} ({$user['cargo']})<br>";
+    echo "Utilizador encontrado: {$user['nome']} ({$user['cargo']})<br>";
     
     if(password_verify($senha_teste, $user['senha'])) {
-        echo "✅ <span style='color:green'>SENHA CORRETA! (123456)</span><br>";
+        echo "<span style='color:green'>SENHA CORRETA! (123456)</span><br>";
     } else {
-        echo "❌ <span style='color:red'>SENHA INCORRETA!</span><br>";
+        echo "<span style='color:red'>SENHA INCORRETA!</span><br>";
         echo "Hash no banco: " . $user['senha'] . "<br>";
         
         // Gerar hash correto para 123456
@@ -65,7 +65,7 @@ if($user) {
         echo "<a href='fix_senhas.php'>Clique aqui para corrigir as senhas automaticamente</a><br>";
     }
 } else {
-    echo "❌ Utilizador admin@rentcar.com não encontrado!<br>";
+    echo "Utilizador admin@rentcar.com não encontrado!<br>";
 }
 
 // 4. Verificar se os dashboards existem
@@ -73,8 +73,8 @@ echo "<h2>4. Verificar Dashboards</h2>";
 $admin_dashboard = __DIR__ . '/admin/dashboard.php';
 $funcionario_dashboard = __DIR__ . '/funcionario/dashboard.php';
 
-echo "admin/dashboard.php: " . (file_exists($admin_dashboard) ? "✅ Existe" : "❌ NÃO EXISTE") . "<br>";
-echo "funcionario/dashboard.php: " . (file_exists($funcionario_dashboard) ? "✅ Existe" : "❌ NÃO EXISTE") . "<br>";
+echo "admin/dashboard.php: " . (file_exists($admin_dashboard) ? "Existe" : "NÃO EXISTE") . "<br>";
+echo "funcionario/dashboard.php: " . (file_exists($funcionario_dashboard) ? "Existe" : "NÃO EXISTE") . "<br>";
 
 // 5. Teste de sessão
 echo "<h2>5. Teste de Sessão</h2>";

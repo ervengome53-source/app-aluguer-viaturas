@@ -29,6 +29,7 @@ if(!$reserva) {
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes da Reserva - Funcionário</title>
@@ -229,7 +230,7 @@ if(!$reserva) {
         <div class="content">
             <!-- Cliente -->
             <div class="info-section">
-                <h3>👤 Cliente</h3>
+                <h3><i class="fas fa-user"></i> Cliente</h3>
                 <div class="info-row">
                     <div class="info-label">Nome:</div>
                     <div class="info-value"><?= htmlspecialchars($reserva['cliente_nome']) ?></div>
@@ -246,7 +247,7 @@ if(!$reserva) {
             
             <!-- Viatura -->
             <div class="info-section">
-                <h3>Viatura</h3>
+                <h3><i class="fas fa-car"></i> Viatura</h3>
                 <div class="info-row">
                     <div class="info-label">Modelo:</div>
                     <div class="info-value"><?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?></div>
@@ -263,7 +264,7 @@ if(!$reserva) {
             
             <!-- Período -->
             <div class="info-section">
-                <h3>Período da Reserva</h3>
+        <h3><i class="fas fa-calendar-alt"></i> Período da Reserva</h3>
                 <div class="info-row">
                     <div class="info-label">Data de Início:</div>
                     <div class="info-value"><?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?></div>
@@ -284,7 +285,7 @@ if(!$reserva) {
             
             <!-- Status -->
             <div class="info-section">
-                <h3>Status</h3>
+            <h3><i class="fas fa-chart-line"></i> Status</h3>
                 <div class="info-row">
                     <div class="info-label">Situação:</div>
                     <div class="info-value">

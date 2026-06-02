@@ -47,6 +47,7 @@ $reservas_recentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel - Cliente SIGAV</title>
@@ -63,33 +64,33 @@ $reservas_recentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="grade-estatisticas">
                 <div class="cartao-estatistica">
                     <div class="estatistica-info">
-                        <h3>Reservas Ativas</h3>
-                        <div class="estatistica-numero"> <?= $estatisticas['reservas_ativas'] ?></div>
+                        <h3><i class="fas fa-calendar-check"></i> Reservas Ativas</h3>
+                        <div class="estatistica-numero"><?= $estatisticas['reservas_ativas'] ?></div>
                     </div>
-                    <div class="estatistica-icone"></div>
+                    <div class="estatistica-icone"><i class="fas fa-calendar-check"></i></div>
                 </div>
                 
                 <div class="cartao-estatistica">
                     <div class="estatistica-info">
-                        <h3>Total Aluguer</h3>
-                        <div class="estatistica-numero"> <?= $estatisticas['total_alugueis'] ?></div>
+                        <h3><i class="fas fa-car"></i> Total Aluguer</h3>
+                        <div class="estatistica-numero"><?= $estatisticas['total_alugueis'] ?></div>
                     </div>
-                    <div class="estatistica-icone"></div>
+                    <div class="estatistica-icone"><i class="fas fa-car"></i></div>
                 </div>
                 
                 <div class="cartao-estatistica">
                     <div class="estatistica-info">
-                        <h3>Total Gasto</h3>
-                        <div class="estatistica-numero"> MZN <?= number_format($estatisticas['total_gasto'], 2) ?></div>
+                        <h3><i class="fas fa-money-bill-wave"></i> Total Gasto</h3>
+                        <div class="estatistica-numero">MZN <?= number_format($estatisticas['total_gasto'], 2) ?></div>
                     </div>
-                    <div class="estatistica-icone"></div>
+                    <div class="estatistica-icone"><i class="fas fa-money-bill-wave"></i></div>
                 </div>
             </div>
             
             <div class="cartao">
                 <div class="cartao-cabecalho">
-                    <h3 class="cartao-titulo">Minhas Reservas Recentes</h3>
-                    <a href="reservas.php" class="btn btn-primario">Ver Todas</a>
+                    <h3 class="cartao-titulo"><i class="fas fa-history"></i> Minhas Reservas Recentes</h3>
+                    <a href="reservas.php" class="btn btn-primario"><i class="fas fa-eye"></i> Ver Todas</a>
                 </div>
                 
                 <?php if(count($reservas_recentes) > 0): ?>
@@ -97,27 +98,36 @@ $reservas_recentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <table class="tabela">
                         <thead>
                             <tr>
-                                <th>Viatura</th>
-                                <th>Datas</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Ações</th>
+                                <th><i class="fas fa-car"></i> Viatura</th>
+                                <th><i class="fas fa-calendar"></i> Datas</th>
+                                <th><i class="fas fa-coins"></i> Total</th>
+                                <th><i class="fas fa-chart-line"></i> Status</th>
+                                <th><i class="fas fa-cogs"></i> Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach($reservas_recentes as $reserva): ?>
                             <tr>
-                                <td><?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?></td>
-                                <td><?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?> - <?= date('d/m/Y', strtotime($reserva['data_fim'])) ?></td>
-                                <td> MZN <?= number_format($reserva['preco_total'], 2) ?></td>
+                                <td><i class="fas fa-car-side"></i> <?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?></td>
+                                <td><i class="fas fa-calendar-alt"></i> <?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?> - <?= date('d/m/Y', strtotime($reserva['data_fim'])) ?></td>
+                                <td><i class="fas fa-money-bill-wave"></i> MZN <?= number_format($reserva['preco_total'], 2) ?></td>
                                 <td>
                                     <span class="etiqueta etiqueta-<?= $reserva['status'] == 'pendente' ? 'aviso' : ($reserva['status'] == 'confirmada' ? 'sucesso' : 'perigo') ?>">
+                                        <?php if($reserva['status'] == 'pendente'): ?>
+                                            <i class="fas fa-clock"></i>
+                                        <?php elseif($reserva['status'] == 'confirmada'): ?>
+                                            <i class="fas fa-check-circle"></i>
+                                        <?php else: ?>
+                                            <i class="fas fa-times-circle"></i>
+                                        <?php endif; ?>
                                         <?= ucfirst($reserva['status']) ?>
                                     </span>
                                 </td>
                                 <td>
                                     <?php if($reserva['status'] == 'pendente'): ?>
-                                        <button class="btn btn-perigo btn-sm" onclick="cancelarReserva(<?= $reserva['id'] ?>)">Cancelar</button>
+                                        <button class="btn btn-perigo btn-sm" onclick="cancelarReserva(<?= $reserva['id'] ?>)">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -127,12 +137,21 @@ $reservas_recentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <?php else: ?>
                 <div style="text-align: center; padding: 2rem; color: #999;">
-                    Nenhuma reserva encontrada.
+                    <i class="fas fa-inbox" style="font-size: 3rem;"></i>
+                    <p>Nenhuma reserva encontrada.</p>
                 </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
+    
+    <script>
+        function cancelarReserva(id) {
+            if(confirm('Tem certeza que deseja cancelar esta reserva?')) {
+                window.location.href = `cancelar_reserva.php?id=${id}`;
+            }
+        }
+    </script>
     
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/cliente.js"></script>
