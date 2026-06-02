@@ -963,7 +963,7 @@ $utilizadores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <i class="fas fa-info-circle"></i>
                         <div>
                             <strong>Informação importante:</strong><br>
-                            A senha padrão será: <strong>123456</strong><br>
+                            A senha padrão será: <strong>******</strong><br>
                             <small>O utilizador deverá alterar a senha no primeiro acesso.</small>
                         </div>
                     </div>

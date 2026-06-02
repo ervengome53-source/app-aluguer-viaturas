@@ -80,153 +80,291 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Gestão de Reservas - SIGAV</title>
     <link rel="stylesheet" href="../assets/css/estilo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        .container-app { display: flex; min-height: 100vh; }
-        .conteudo-principal { flex: 1; margin-left: 270px; padding: 1.5rem; }
-        
-        /* Estatísticas */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .stat-card {
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fb;
+            overflow-x: hidden;
+        }
+
+        .container-app {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .barra-lateral {
+            width: 280px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .conteudo-principal {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            background: #f5f7fb;
+            min-height: 100vh;
+            width: calc(100% - 280px);
+        }
+
+        .barra-superior {
             background: white;
-            border-radius: 16px;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-        .stat-label {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 0.3rem;
-        }
-        .stat-pendente .stat-number { color: #ffc107; }
-        .stat-confirmada .stat-number { color: #28a745; }
-        .stat-rejeitada .stat-number { color: #dc3545; }
-        
-        .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-        
-        .card-header {
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.5rem;
-            background: linear-gradient(135deg, #1E3A5F, #2a5298);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        
-        .card-header h3 {
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #FF8C00, #FFD700);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.pendente { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+        .stat-icon.confirmada { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+        .stat-icon.rejeitada { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+
+        .stat-info h3 {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        /* Card Principal */
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
             color: white;
-            margin: 0;
-            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        
+
+        /* Filtros */
         .filtros {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
-        
+
         .btn-filter {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
             text-decoration: none;
             font-size: 0.75rem;
+            font-weight: 500;
             transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
         }
-        
+
         .btn-filter-active {
             background: #FF8C00;
             color: white;
         }
-        
+
         .btn-filter-inactive {
             background: rgba(255,255,255,0.2);
             color: white;
         }
-        
-        .btn-filter-inactive:hover { background: rgba(255,255,255,0.3); }
-        
-        .table-container { overflow-x: auto; }
-        
-        .table {
+
+        .btn-filter-inactive:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Tabela */
+        .table-container {
+            padding: 0 1rem 1rem 1rem;
+            overflow-x: auto;
+        }
+
+        .modern-table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 800px;
         }
-        
-        .table th {
-            padding: 0.8rem;
+
+        .modern-table th {
+            padding: 1rem 0.8rem;
             text-align: left;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: #1E3A5F;
-            border-bottom: 2px solid #FF8C00;
-            font-size: 0.75rem;
+            color: #888;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #eee;
         }
-        
-        .table td {
+
+        .modern-table td {
             padding: 0.8rem;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+            vertical-align: middle;
         }
-        
-        .table tr:hover td { background: #fef9e6; }
-        
+
+        .modern-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .modern-table tr:hover td {
+            background: #fef9e6;
+        }
+
+        /* Badges */
         .badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
             font-size: 0.7rem;
-            font-weight: 600;
+            font-weight: 500;
         }
-        
+
         .badge-pendente { background: #fff3cd; color: #856404; }
         .badge-confirmada { background: #d4edda; color: #155724; }
         .badge-rejeitada { background: #f8d7da; color: #721c24; }
-        
+
+        /* Botões */
         .btn-sm {
-            padding: 0.25rem 0.6rem;
+            padding: 0.3rem 0.8rem;
             font-size: 0.7rem;
-            border-radius: 5px;
+            border-radius: 0.5rem;
             border: none;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.3rem;
             transition: all 0.3s ease;
+            font-weight: 500;
             text-decoration: none;
         }
-        
+
         .btn-success { background: #28a745; color: white; }
         .btn-success:hover { background: #218838; transform: translateY(-2px); }
+
         .btn-danger { background: #dc3545; color: white; }
         .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
+
         .btn-info { background: #17a2b8; color: white; }
         .btn-info:hover { background: #138496; transform: translateY(-2px); }
-        
-        .acoes-cell { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-        
-        /* Modal Styles */
+
+        .acoes-cell {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -236,136 +374,194 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
             justify-content: center;
             align-items: center;
         }
-        
+
         .modal-content {
             background: white;
-            border-radius: 20px;
+            border-radius: 1.5rem;
             width: 90%;
             max-width: 500px;
             animation: modalFadeIn 0.3s ease;
             overflow: hidden;
         }
-        
+
         @keyframes modalFadeIn {
             from { opacity: 0; transform: translateY(-50px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .modal-header {
             padding: 1rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .modal-header.confirmar { background: #28a745; color: white; }
-        .modal-header.rejeitar { background: #dc3545; color: white; }
-        
+
+        .modal-header.confirmar { background: linear-gradient(135deg, #28a745, #20c997); color: white; }
+        .modal-header.rejeitar { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+
         .modal-header h3 {
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .modal-close {
             background: none;
             border: none;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             cursor: pointer;
             opacity: 0.8;
+            transition: all 0.3s ease;
         }
-        
-        .modal-close:hover { opacity: 1; }
-        
+
+        .modal-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
         .modal-body {
             padding: 1.5rem;
         }
-        
+
         .modal-info {
             background: #f8f9fa;
-            border-radius: 12px;
+            border-radius: 1rem;
             padding: 1rem;
-            margin-bottom: 1rem;
+            margin: 1rem 0;
         }
-        
+
         .modal-info-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            padding: 0.6rem 0;
             border-bottom: 1px solid #e9ecef;
+            font-size: 0.85rem;
         }
-        
+
         .modal-info-row:last-child {
             border-bottom: none;
         }
-        
+
         .modal-buttons {
             display: flex;
             gap: 1rem;
             margin-top: 1.5rem;
         }
-        
+
         .btn-modal-cancel {
             flex: 1;
             padding: 0.7rem;
             background: #6c757d;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 0.8rem;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-        
+
+        .btn-modal-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
         .btn-modal-confirm {
             flex: 1;
             padding: 0.7rem;
             background: #28a745;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 0.8rem;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-        
-        .btn-modal-confirm.rejeitar { background: #dc3545; }
-        .btn-modal-confirm:hover { filter: brightness(0.9); }
-        
-        .mensagem-flutuante {
-            background: #d4edda;
-            color: #155724;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #28a745;
+
+        .btn-modal-confirm.rejeitar {
+            background: #dc3545;
+        }
+
+        .btn-modal-confirm:hover {
+            transform: translateY(-2px);
+            filter: brightness(0.95);
+        }
+
+        /* Toast */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 0.8rem;
+            z-index: 2000;
+            animation: slideInRight 0.3s ease;
         }
-        
-        .mensagem-flutuante.erro {
-            background: #f8d7da;
-            color: #721c24;
-            border-left-color: #dc3545;
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-        
-        .close-mensagem {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: inherit;
+
+        .toast-success { border-left: 4px solid #28a745; }
+        .toast-success i { color: #28a745; }
+        .toast-error { border-left: 4px solid #dc3545; }
+        .toast-error i { color: #dc3545; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
         }
-        
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsivo */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
-            .conteudo-principal { margin-left: 0; padding: 1rem; }
-            .card-header { flex-direction: column; gap: 1rem; }
-            .stats-grid { grid-template-columns: 1fr; }
+            .barra-lateral {
+                width: 0;
+                transform: translateX(-100%);
+            }
+            .conteudo-principal {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .card-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filtros {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -377,38 +573,65 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
             <?php include '../components/cabecalho.php'; ?>
             
             <?php if($mensagem): ?>
-            <div class="mensagem-flutuante">
-                <span><i class="fas fa-check-circle"></i> <?= htmlspecialchars($mensagem) ?></span>
-                <button class="close-mensagem" onclick="this.parentElement.style.display='none'">&times;</button>
+            <div class="toast-notification toast-success" id="toast">
+                <i class="fas fa-check-circle fa-lg"></i>
+                <span><?= htmlspecialchars($mensagem) ?></span>
             </div>
             <?php endif; ?>
             
             <?php if($erro): ?>
-            <div class="mensagem-flutuante erro">
-                <span><i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($erro) ?></span>
-                <button class="close-mensagem" onclick="this.parentElement.style.display='none'">&times;</button>
+            <div class="toast-notification toast-error" id="toast">
+                <i class="fas fa-exclamation-circle fa-lg"></i>
+                <span><?= htmlspecialchars($erro) ?></span>
             </div>
             <?php endif; ?>
             
-            <!-- Estatísticas -->
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Gestão de Reservas</h1>
+                <p>Gerencie todas as reservas do sistema</p>
+            </div>
+            
+            <!-- Statistics Cards -->
             <div class="stats-grid">
-                <div class="stat-card stat-pendente">
-                    <div class="stat-number"><?= $stats['total_pendentes'] ?? 0 ?></div>
-                    <div class="stat-label"><i class="fas fa-clock"></i> Pendentes</div>
+                <div class="stat-card">
+                    <div class="stat-icon pendente">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Reservas Pendentes</h3>
+                        <div class="stat-number"><?= $stats['total_pendentes'] ?? 0 ?></div>
+                        <div class="stat-label">Aguardando ação</div>
+                    </div>
                 </div>
-                <div class="stat-card stat-confirmada">
-                    <div class="stat-number"><?= $stats['total_confirmadas'] ?? 0 ?></div>
-                    <div class="stat-label"><i class="fas fa-check-circle"></i> Confirmadas</div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon confirmada">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Reservas Confirmadas</h3>
+                        <div class="stat-number"><?= $stats['total_confirmadas'] ?? 0 ?></div>
+                        <div class="stat-label">Aprovadas</div>
+                    </div>
                 </div>
-                <div class="stat-card stat-rejeitada">
-                    <div class="stat-number"><?= $stats['total_rejeitadas'] ?? 0 ?></div>
-                    <div class="stat-label"><i class="fas fa-times-circle"></i> Rejeitadas</div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon rejeitada">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Reservas Rejeitadas</h3>
+                        <div class="stat-number"><?= $stats['total_rejeitadas'] ?? 0 ?></div>
+                        <div class="stat-label">Recusadas</div>
+                    </div>
                 </div>
             </div>
             
+            <!-- Main Card -->
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-calendar-check"></i> Gestão de Reservas</h3>
+                    <h3><i class="fas fa-calendar-check"></i> Lista de Reservas</h3>
                     <div class="filtros">
                         <a href="?filtro=pendentes" class="btn-filter <?= $filtro == 'pendentes' ? 'btn-filter-active' : 'btn-filter-inactive' ?>">
                             <i class="fas fa-clock"></i> Pendentes
@@ -423,69 +646,70 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
                 </div>
                 
                 <div class="table-container">
-                    <table class="table">
+                    <?php if(count($reservas) > 0): ?>
+                    <table class="modern-table">
                         <thead>
                             <tr>
-                                <th><i class="fas fa-user"></i> Cliente</th>
-                                <th><i class="fas fa-car"></i> Viatura</th>
-                                <th><i class="fas fa-calendar"></i> Período</th>
-                                <th><i class="fas fa-money-bill-wave"></i> Valor</th>
-                                <th><i class="fas fa-chart-line"></i> Status</th>
-                                <th><i class="fas fa-cogs"></i> Ações</th>
+                                <th>Cliente</th>
+                                <th>Viatura</th>
+                                <th>Período</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if(count($reservas) > 0): ?>
-                                <?php foreach($reservas as $reserva): ?>
-                                <tr>
-                                    <td>
-                                        <i class="fas fa-user-circle"></i> <strong><?= htmlspecialchars($reserva['cliente_nome']) ?></strong><br>
-                                        <small><i class="fas fa-envelope"></i> <?= htmlspecialchars($reserva['cliente_email']) ?></small><br>
-                                        <small><i class="fas fa-phone"></i> <?= htmlspecialchars($reserva['cliente_telefone'] ?? '---') ?></small>
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-car-side"></i> <?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?><br>
-                                        <small><i class="fas fa-id-card"></i> <?= htmlspecialchars($reserva['matricula']) ?></small><br>
-                                        <small><i class="fas fa-coins"></i> MZN <?= number_format($reserva['preco_dia'], 2) ?>/dia</small>
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-calendar-alt"></i> <?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?><br>
-                                        <small><i class="fas fa-arrow-right"></i> até <?= date('d/m/Y', strtotime($reserva['data_fim'])) ?></small><br>
-                                        <small><i class="fas fa-sun"></i> <?= $reserva['total_dias'] ?> dias</small>
-                                    </td>
-                                    <td><i class="fas fa-coins"></i> <strong>MZN <?= number_format($reserva['preco_total'], 2) ?></strong></td>
-                                    <td>
-                                        <?php if($reserva['status'] == 'pendente'): ?>
-                                            <span class="badge badge-pendente"><i class="fas fa-clock"></i> Pendente</span>
-                                        <?php elseif($reserva['status'] == 'confirmada'): ?>
-                                            <span class="badge badge-confirmada"><i class="fas fa-check-circle"></i> Confirmada</span>
-                                        <?php else: ?>
-                                            <span class="badge badge-rejeitada"><i class="fas fa-times-circle"></i> Rejeitada</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="acoes-cell">
-                                        <?php if($reserva['status'] == 'pendente'): ?>
-                                            <button class="btn-sm btn-success" onclick="abrirModalConfirmar(<?= $reserva['id'] ?>, '<?= htmlspecialchars($reserva['cliente_nome']) ?>', '<?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?>', '<?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?>', '<?= date('d/m/Y', strtotime($reserva['data_fim'])) ?>', <?= $reserva['preco_total'] ?>)">
-                                                <i class="fas fa-check"></i> Confirmar
-                                            </button>
-                                            <button class="btn-sm btn-danger" onclick="abrirModalRejeitar(<?= $reserva['id'] ?>, '<?= htmlspecialchars($reserva['cliente_nome']) ?>', '<?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?>')">
-                                                <i class="fas fa-times"></i> Rejeitar
-                                            </button>
-                                        <?php endif; ?>
-                                        <a href="detalhe_reserva.php?id=<?= $reserva['id'] ?>" class="btn-sm btn-info">
-                                            <i class="fas fa-eye"></i> Detalhes
-                                        </a>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr><td colspan="6" style="text-align: center; padding: 3rem;">
-                                    <i class="fas fa-inbox" style="font-size: 3rem; color: #ccc;"></i><br>
-                                    Nenhuma reserva encontrada
-                                </td></tr>
-                            <?php endif; ?>
+                            <?php foreach($reservas as $reserva): ?>
+                            <tr>
+                                <td>
+                                    <strong><?= htmlspecialchars($reserva['cliente_nome']) ?></strong><br>
+                                    <small style="color: #999;"><?= $reserva['cliente_email'] ?></small><br>
+                                    <small><i class="fas fa-phone"></i> <?= $reserva['cliente_telefone'] ?? '---' ?></small>
+                                </td>
+                                <td>
+                                    <strong><?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?></strong><br>
+                                    <small><?= $reserva['matricula'] ?></small><br>
+                                    <small><i class="fas fa-coins"></i> MZN <?= number_format($reserva['preco_dia'], 2) ?>/dia</small>
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar-alt"></i> <?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?><br>
+                                    <i class="fas fa-arrow-right"></i> até <?= date('d/m/Y', strtotime($reserva['data_fim'])) ?><br>
+                                    <small><?= $reserva['total_dias'] ?> dias</small>
+                                </td>
+                                <td class="price">MZN <?= number_format($reserva['preco_total'], 2) ?></td>
+                                <td>
+                                    <?php if($reserva['status'] == 'pendente'): ?>
+                                        <span class="badge badge-pendente"><i class="fas fa-clock"></i> Pendente</span>
+                                    <?php elseif($reserva['status'] == 'confirmada'): ?>
+                                        <span class="badge badge-confirmada"><i class="fas fa-check-circle"></i> Confirmada</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-rejeitada"><i class="fas fa-times-circle"></i> Rejeitada</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="acoes-cell">
+                                    <?php if($reserva['status'] == 'pendente'): ?>
+                                        <button class="btn-sm btn-success" onclick="abrirModalConfirmar(<?= $reserva['id'] ?>, '<?= htmlspecialchars($reserva['cliente_nome']) ?>', '<?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?>', '<?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?>', '<?= date('d/m/Y', strtotime($reserva['data_fim'])) ?>', <?= $reserva['preco_total'] ?>)">
+                                            <i class="fas fa-check"></i> Confirmar
+                                        </button>
+                                        <button class="btn-sm btn-danger" onclick="abrirModalRejeitar(<?= $reserva['id'] ?>, '<?= htmlspecialchars($reserva['cliente_nome']) ?>', '<?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?>')">
+                                            <i class="fas fa-times"></i> Rejeitar
+                                        </button>
+                                    <?php endif; ?>
+                                    <a href="detalhe_reserva.php?id=<?= $reserva['id'] ?>" class="btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> Detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
                         </tbody>
-                    </table>
+                     </table>
+                    <?php else: ?>
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Nenhuma reserva encontrada</p>
+                        <small>Altere o filtro para ver mais resultados</small>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -568,7 +792,15 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
     </div>
     
     <script>
-        // Abrir modal de confirmação
+        // Auto-hide toast after 3 seconds
+        const toast = document.getElementById('toast');
+        if(toast) {
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
         function abrirModalConfirmar(id, cliente, viatura, dataInicio, dataFim, valor) {
             document.getElementById('confirmar_id').value = id;
             document.getElementById('confirmar_cliente').innerHTML = cliente;
@@ -578,7 +810,6 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
             document.getElementById('modalConfirmar').style.display = 'flex';
         }
         
-        // Abrir modal de rejeição
         function abrirModalRejeitar(id, cliente, viatura) {
             document.getElementById('rejeitar_id').value = id;
             document.getElementById('rejeitar_cliente').innerHTML = cliente;
@@ -586,7 +817,6 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
             document.getElementById('modalRejeitar').style.display = 'flex';
         }
         
-        // Fechar modal
         function fecharModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
@@ -602,7 +832,27 @@ $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
                 modalRejeitar.style.display = 'none';
             }
         }
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(event) {
+            if(event.key === 'Escape') {
+                fecharModal('modalConfirmar');
+                fecharModal('modalRejeitar');
+            }
+        });
     </script>
+    
+    <style>
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        .price {
+            font-weight: 700;
+            color: #FF8C00;
+        }
+    </style>
     
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/funcionario.js"></script>

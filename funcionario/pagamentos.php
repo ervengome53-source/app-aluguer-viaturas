@@ -73,7 +73,9 @@ $query = "SELECT
           COUNT(CASE WHEN estado = 'pendente' THEN 1 END) as pendentes,
           SUM(CASE WHEN estado = 'pendente' THEN valor ELSE 0 END) as valor_pendente,
           COUNT(CASE WHEN estado = 'confirmado' AND DATE(data_pagamento) = CURDATE() THEN 1 END) as confirmados_hoje,
-          SUM(CASE WHEN estado = 'confirmado' AND DATE(data_pagamento) = CURDATE() THEN valor ELSE 0 END) as valor_hoje
+          SUM(CASE WHEN estado = 'confirmado' AND DATE(data_pagamento) = CURDATE() THEN valor ELSE 0 END) as valor_hoje,
+          COUNT(CASE WHEN estado = 'confirmado' THEN 1 END) as total_confirmados,
+          SUM(CASE WHEN estado = 'confirmado' THEN valor ELSE 0 END) as total_receita
           FROM pagamentos";
 $stmt = $db->prepare($query);
 $stmt->execute();
@@ -84,236 +86,454 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Pagamentos - Funcionário</title>
-    <link rel="stylesheet" href="../assets/css/estilo.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Gestão de Pagamentos - SIGAV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fb; overflow-x: hidden; }
         
-        .container-app { display: flex; min-height: 100vh; }
-        .conteudo-principal { flex: 1; margin-left: 270px; padding: 1.5rem; }
+        .container-app { display: flex; min-height: 100vh; width: 100%; }
+        .barra-lateral { width: 280px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; position: fixed; left: 0; top: 0; height: 100vh; overflow-y: auto; z-index: 100; transition: all 0.3s ease; }
+        .conteudo-principal { flex: 1; margin-left: 280px; padding: 2rem; background: #f5f7fb; min-height: 100vh; width: calc(100% - 280px); }
+        .barra-superior { background: white; border-radius: 1rem; padding: 1rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 2rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 0.95rem; }
+        
+        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
         
         .stat-card {
             background: white;
-            border-radius: 16px;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .stat-number { font-size: 1.6rem; font-weight: bold; color: #1E3A5F; }
-        .stat-label { font-size: 0.7rem; color: #888; margin-top: 0.3rem; display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
         
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #FF8C00, #FFD700);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon.warning { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+        .stat-icon.danger { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+        .stat-icon.success { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+        .stat-icon.primary { background: rgba(255, 140, 0, 0.1); color: #FF8C00; }
+        
+        .stat-info h3 {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #999;
+        }
+        
+        /* Card Principal */
         .card {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 1.5rem;
             overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 1.5rem;
         }
         
         .card-header {
-            padding: 1rem 1.5rem;
-            background: linear-gradient(135deg, #1E3A5F, #2a5298);
+            padding: 1.2rem 1.5rem;
+            background: white;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+        
+        .btn-primary:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        /* Tabela */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .modern-table th {
+            padding: 1rem 0.8rem;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #eee;
+            background: white;
+        }
+        
+        .modern-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+            vertical-align: middle;
+            background: white;
+        }
+        
+        .modern-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .modern-table tr:hover td {
+            background: #fef9e6;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .badge-pendente { background: #fff3cd; color: #856404; }
+        .badge-confirmado { background: #d4edda; color: #155724; }
+        
+        .price {
+            font-weight: 700;
+            color: #FF8C00;
+        }
+        
+        /* Botões de Ação */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-confirmar {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-confirmar:hover {
+            background: #28a745;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-cancelar {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancelar:hover {
+            background: #dc3545;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-recibo {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-recibo:hover {
+            background: #17a2b8;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 420px;
+            animation: modalFadeIn 0.3s ease;
+            overflow: hidden;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .card-header h3 { color: white; margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        
-        .btn-primary {
-            background: #FF8C00;
-            color: white;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.75rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover { background: #e67e00; transform: translateY(-2px); }
-        
-        .tabela-container { overflow-x: auto; }
-        .tabela { width: 100%; border-collapse: collapse; }
-        .tabela th {
-            padding: 0.8rem 1rem;
-            text-align: left;
-            background: #f8f9fa;
-            color: #1E3A5F;
-            border-bottom: 2px solid #FF8C00;
-            font-size: 0.7rem;
+        .modal-header h3 {
+            font-size: 1.1rem;
             font-weight: 600;
-            text-transform: uppercase;
-        }
-        .tabela td {
-            padding: 0.8rem 1rem;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-        }
-        .tabela tr:hover td { background: #fef9e6; }
-        
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-warning { background: #fff3cd; color: #856404; }
-        
-        .btn-confirmar {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            transition: all 0.3s ease;
-        }
-        .btn-confirmar:hover { background: #218838; transform: translateY(-2px); }
-        
-        .btn-cancelar {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            transition: all 0.3s ease;
-        }
-        .btn-cancelar:hover { background: #c82333; transform: translateY(-2px); }
-        
-        .btn-recibo {
-            background: #17a2b8;
-            color: white;
-            border: none;
-            padding: 0.3rem 0.7rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            transition: all 0.3s ease;
-        }
-        .btn-recibo:hover { background: #138496; transform: translateY(-2px); }
-        
-        .acoes-cell { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-        .valor-destaque { font-weight: bold; color: #FF8C00; }
-        
-        .notificacao {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            z-index: 9999;
-            animation: slideIn 0.3s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        .notificacao.sucesso { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
-        .notificacao.erro { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
         
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 10000;
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .modal-message {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modal-details {
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem 1.5rem;
+            display: flex;
             justify-content: center;
-            align-items: center;
+            gap: 1rem;
+            border-top: 1px solid #eee;
         }
-        
-        .modal-confirm {
-            background: white;
-            border-radius: 16px;
-            max-width: 420px;
-            width: 90%;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        
-        .modal-confirm .modal-header {
-            background: linear-gradient(135deg, #1E3A5F, #2a5298);
-            padding: 1rem 1.5rem;
-        }
-        .modal-confirm .modal-header h3 { color: white; margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .modal-confirm .modal-body { padding: 1.5rem; text-align: center; }
-        .modal-confirm .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
-        .modal-confirm .modal-message { font-size: 0.95rem; color: #333; margin-bottom: 0.5rem; }
-        .modal-confirm .modal-details { font-size: 0.8rem; color: #666; background: #f8f9fa; padding: 0.8rem; border-radius: 10px; margin-top: 0.8rem; }
-        .modal-confirm .modal-footer { padding: 1rem 1.5rem 1.5rem; display: flex; justify-content: center; gap: 1rem; }
         
         .btn-cancel-modal {
             background: #6c757d;
             color: white;
             border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.8rem;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-weight: 500;
             transition: all 0.3s ease;
         }
-        .btn-cancel-modal:hover { background: #5a6268; transform: translateY(-2px); }
+        
+        .btn-cancel-modal:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
         
         .btn-confirm-modal {
-            background: #dc3545;
+            background: #28a745;
             color: white;
             border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.8rem;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-weight: 500;
             transition: all 0.3s ease;
         }
-        .btn-confirm-modal:hover { background: #c82333; transform: translateY(-2px); }
-        .btn-confirm-success { background: #28a745; }
-        .btn-confirm-success:hover { background: #218838; }
         
-        .empty-state { text-align: center; padding: 2.5rem; color: #999; }
-        .empty-state i { font-size: 2.5rem; margin-bottom: 0.5rem; color: #ddd; }
+        .btn-confirm-modal:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
         
-        @media (max-width: 992px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        .btn-confirm-danger {
+            background: #dc3545;
+        }
+        
+        .btn-confirm-danger:hover {
+            background: #c82333;
+        }
+        
+        /* Toast */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            z-index: 2000;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .toast-success { border-left: 4px solid #28a745; }
+        .toast-success i { color: #28a745; }
+        .toast-error { border-left: 4px solid #dc3545; }
+        .toast-error i { color: #dc3545; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         @media (max-width: 768px) {
-            .conteudo-principal { margin-left: 0; padding: 1rem; }
+            .barra-lateral { width: 0; transform: translateX(-100%); }
+            .conteudo-principal { margin-left: 0; width: 100%; padding: 1rem; }
             .stats-grid { grid-template-columns: 1fr; }
-            .acoes-cell { flex-direction: column; }
+            .card-header { flex-direction: column; align-items: stretch; }
+            .action-buttons { justify-content: center; }
+            .table-container { overflow-x: auto; }
+            .modern-table { min-width: 700px; }
         }
     </style>
 </head>
@@ -325,48 +545,93 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
             <?php include '../components/cabecalho.php'; ?>
             
             <?php if($mensagem): ?>
-                <div class="notificacao sucesso"><?= $mensagem ?></div>
-            <?php endif; ?>
-            <?php if($erro): ?>
-                <div class="notificacao erro"><?= $erro ?></div>
+            <div class="toast-notification toast-success" id="toast">
+                <i class="fas fa-check-circle fa-lg"></i>
+                <span><?= $mensagem ?></span>
+            </div>
+            <script>setTimeout(() => { const t = document.getElementById('toast'); if(t) t.style.display = 'none'; }, 3000);</script>
             <?php endif; ?>
             
+            <?php if($erro): ?>
+            <div class="toast-notification toast-error" id="toastErro">
+                <i class="fas fa-exclamation-circle fa-lg"></i>
+                <span><?= $erro ?></span>
+            </div>
+            <script>setTimeout(() => { const t = document.getElementById('toastErro'); if(t) t.style.display = 'none'; }, 3000);</script>
+            <?php endif; ?>
+            
+            <div class="page-header">
+                <h1>Gestão de Pagamentos</h1>
+                <p>Gerencie todos os pagamentos do sistema</p>
+            </div>
+            
+            <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number"><?= $stats['pendentes'] ?? 0 ?></div>
-                    <div class="stat-label"><i class="fas fa-clock"></i> Pendentes</div>
+                    <div class="stat-icon warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Pagamentos Pendentes</h3>
+                        <div class="stat-number"><?= $stats['pendentes'] ?? 0 ?></div>
+                        <div class="stat-label">Aguardando confirmação</div>
+                    </div>
                 </div>
+                
                 <div class="stat-card">
-                    <div class="stat-number">MZN <?= number_format($stats['valor_pendente'] ?? 0, 2) ?></div>
-                    <div class="stat-label"><i class="fas fa-money-bill-wave"></i> Valor Pendente</div>
+                    <div class="stat-icon danger">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Valor Pendente</h3>
+                        <div class="stat-number">MZN <?= number_format($stats['valor_pendente'] ?? 0, 2) ?></div>
+                        <div class="stat-label">Total em aberto</div>
+                    </div>
                 </div>
+                
                 <div class="stat-card">
-                    <div class="stat-number"><?= $stats['confirmados_hoje'] ?? 0 ?></div>
-                    <div class="stat-label"><i class="fas fa-check-circle"></i> Confirmados Hoje</div>
+                    <div class="stat-icon success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Confirmados Hoje</h3>
+                        <div class="stat-number"><?= $stats['confirmados_hoje'] ?? 0 ?></div>
+                        <div class="stat-label">Pagamentos do dia</div>
+                    </div>
                 </div>
+                
                 <div class="stat-card">
-                    <div class="stat-number">MZN <?= number_format($stats['valor_hoje'] ?? 0, 2) ?></div>
-                    <div class="stat-label"><i class="fas fa-chart-line"></i> Valor Hoje</div>
+                    <div class="stat-icon primary">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Valor Hoje</h3>
+                        <div class="stat-number">MZN <?= number_format($stats['valor_hoje'] ?? 0, 2) ?></div>
+                        <div class="stat-label">Receita do dia</div>
+                    </div>
                 </div>
             </div>
             
+            <!-- Pagamentos Pendentes -->
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-hourglass-half"></i> Pagamentos Pendentes</h3>
-                    <a href="registar_pagamento.php" class="btn-primary"><i class="fas fa-plus"></i> Novo Pagamento</a>
+                    <h2><i class="fas fa-hourglass-half"></i> Pagamentos Pendentes</h2>
+                    <a href="registar_pagamento.php" class="btn-primary">
+                        <i class="fas fa-plus"></i> Novo Pagamento
+                    </a>
                 </div>
                 
                 <?php if(count($pagamentos_pendentes) > 0): ?>
-                <div class="tabela-container">
-                    <table class="tabela">
+                <div class="table-container">
+                    <table class="modern-table">
                         <thead>
                             <tr>
-                                <th><i class="fas fa-user"></i> Cliente</th>
-                                <th><i class="fas fa-car"></i> Descrição</th>
-                                <th><i class="fas fa-money-bill-wave"></i> Valor</th>
-                                <th><i class="fas fa-credit-card"></i> Método</th>
-                                <th><i class="fas fa-calendar"></i> Data</th>
-                                <th><i class="fas fa-cogs"></i> Ações</th>
+                                <th>Cliente</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Método</th>
+                                <th>Data</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -374,17 +639,23 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
                             <tr>
                                 <td>
                                     <strong><?= htmlspecialchars($p['cliente_nome']) ?></strong><br>
-                                    <small><i class="fas fa-envelope"></i> <?= $p['cliente_email'] ?></small><br>
-                                    <small><i class="fas fa-phone"></i> <?= $p['cliente_telefone'] ?? '---' ?></small>
+                                    <small style="color: #999;"><i class="fas fa-envelope"></i> <?= $p['cliente_email'] ?></small>
                                 </td>
                                 <td>
-                                    <?= htmlspecialchars($p['descricao']) ?>
-                                    <br><small><i class="fas fa-hashtag"></i> <?= $p['referencia_pagamento'] ?></small>
+                                    <?= htmlspecialchars($p['descricao']) ?><br>
+                                    <small><i class="fas fa-hashtag"></i> <?= $p['referencia_pagamento'] ?></small>
                                 </td>
-                                <td><span class="valor-destaque">MZN <?= number_format($p['valor'], 2) ?></span></td>
-                                <td><span class="badge badge-warning"><i class="fas fa-credit-card"></i> <?= ucfirst(str_replace('_', ' ', $p['metodo_pagamento'])) ?></span></td>
-                                <td><?= date('d/m/Y', strtotime($p['data_criacao'])) ?><br><small><?= date('H:i', strtotime($p['data_criacao'])) ?></small></td>
-                                <td class="acoes-cell">
+                                <td class="price">MZN <?= number_format($p['valor'], 2) ?></td>
+                                <td>
+                                    <span class="badge badge-pendente">
+                                        <i class="fas fa-clock"></i> <?= ucfirst(str_replace('_', ' ', $p['metodo_pagamento'])) ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?= date('d/m/Y', strtotime($p['data_criacao'])) ?><br>
+                                    <small><?= date('H:i', strtotime($p['data_criacao'])) ?></small>
+                                </td>
+                                <td class="action-buttons">
                                     <button class="btn-confirmar" onclick="abrirModalConfirmar(<?= $p['id'] ?>, '<?= addslashes($p['cliente_nome']) ?>', <?= $p['valor'] ?>)">
                                         <i class="fas fa-check"></i> Confirmar
                                     </button>
@@ -398,63 +669,90 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
                     </table>
                 </div>
                 <?php else: ?>
-                <div class="empty-state"><i class="fas fa-check-circle"></i><p>Não há pagamentos pendentes</p></div>
+                <div class="empty-state">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Não há pagamentos pendentes</p>
+                    <small>Todos os pagamentos estão confirmados</small>
+                </div>
                 <?php endif; ?>
             </div>
             
+            <!-- Últimos Pagamentos Confirmados -->
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-history"></i> Últimos Pagamentos Confirmados</h3>
+                    <h2><i class="fas fa-history"></i> Últimos Pagamentos Confirmados</h2>
                 </div>
                 
                 <?php if(count($pagamentos_confirmados) > 0): ?>
-                <div class="tabela-container">
-                    <table class="tabela">
+                <div class="table-container">
+                    <table class="modern-table">
                         <thead>
                             <tr>
-                                <th><i class="fas fa-hashtag"></i> Referência</th>
-                                <th><i class="fas fa-user"></i> Cliente</th>
-                                <th><i class="fas fa-car"></i> Descrição</th>
-                                <th><i class="fas fa-money-bill-wave"></i> Valor</th>
-                                <th><i class="fas fa-calendar"></i> Data</th>
-                                <th><i class="fas fa-file-pdf"></i> Recibo</th>
+                                <th>Referência</th>
+                                <th>Cliente</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Data</th>
+                                <th>Recibo</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach($pagamentos_confirmados as $p): ?>
                             <tr>
-                                <td><?= $p['referencia_pagamento'] ?></td>
+                                <td>
+                                    <strong><?= $p['referencia_pagamento'] ?></strong>
+                                </td>
                                 <td><?= htmlspecialchars($p['cliente_nome']) ?></td>
                                 <td><?= htmlspecialchars($p['descricao']) ?></td>
-                                <td><span class="badge badge-success">MZN <?= number_format($p['valor'], 2) ?></span></td>
-                                <td><?= date('d/m/Y H:i', strtotime($p['data_pagamento'])) ?></td>
-                                <td><button class="btn-recibo" onclick="emitirRecibo(<?= $p['id'] ?>)"><i class="fas fa-file-pdf"></i> Recibo</button></td>
+                                <td class="price">MZN <?= number_format($p['valor'], 2) ?></td>
+                                <td>
+                                    <?= date('d/m/Y', strtotime($p['data_pagamento'])) ?><br>
+                                    <small><?= date('H:i', strtotime($p['data_pagamento'])) ?></small>
+                                </td>
+                                <td>
+                                    <button class="btn-recibo" onclick="emitirRecibo(<?= $p['id'] ?>)">
+                                        <i class="fas fa-file-pdf"></i> Recibo
+                                    </button>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
                 <?php else: ?>
-                <div class="empty-state"><i class="fas fa-inbox"></i><p>Nenhum pagamento confirmado</p></div>
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>Nenhum pagamento confirmado</p>
+                    <small>Os pagamentos confirmados aparecerão aqui</small>
+                </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
     
-    <!-- MODAL DE CONFIRMAÇÃO -->
+    <!-- MODAL CONFIRMAÇÃO -->
     <div id="modalConfirmacao" class="modal">
-        <div class="modal-confirm">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-question-circle"></i> Confirmar Ação</h3>
+                <h3 id="modalTitulo"><i class="fas fa-question-circle"></i> Confirmar Ação</h3>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="modal-icon" id="modalIcone"><i class="fas fa-exclamation-triangle" style="color: #ffc107; font-size: 3rem;"></i></div>
-                <div class="modal-message" id="modalMensagem">Tem certeza que deseja realizar esta ação?</div>
+                <div class="modal-icon" id="modalIcone">
+                    <i class="fas fa-exclamation-triangle" style="color: #ffc107;"></i>
+                </div>
+                <div class="modal-message" id="modalMensagem">
+                    Tem certeza que deseja realizar esta ação?
+                </div>
                 <div class="modal-details" id="modalDetalhes"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel-modal" onclick="fecharModalConfirmacao()"><i class="fas fa-times"></i> Cancelar</button>
-                <button class="btn-confirm-modal" id="btnConfirmarAcao"><i class="fas fa-check"></i> Confirmar</button>
+                <button class="btn-cancel-modal" onclick="fecharModal()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-confirm-modal" id="btnConfirmarAcao">
+                    <i class="fas fa-check"></i> Confirmar
+                </button>
             </div>
         </div>
     </div>
@@ -467,31 +765,45 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
     </form>
     
     <script>
-        let acaoPendente = null, idPendente = null;
+        let acaoPendente = null;
+        let idPendente = null;
         
         function abrirModalConfirmar(id, nome, valor) {
-            idPendente = id; acaoPendente = 'confirmar';
+            idPendente = id;
+            acaoPendente = 'confirmar';
+            
+            document.getElementById('modalTitulo').innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Pagamento';
             document.getElementById('modalIcone').innerHTML = '<i class="fas fa-check-circle" style="color: #28a745; font-size: 3rem;"></i>';
             document.getElementById('modalMensagem').innerHTML = 'Confirmar este pagamento?';
             document.getElementById('modalDetalhes').innerHTML = '<strong>Cliente:</strong> ' + nome + '<br><strong>Valor:</strong> MZN ' + valor.toFixed(2);
-            document.getElementById('btnConfirmarAcao').className = 'btn-confirm-modal btn-confirm-success';
-            document.getElementById('btnConfirmarAcao').innerHTML = '<i class="fas fa-check"></i> Sim, confirmar';
-            document.getElementById('modalConfirmacao').style.display = 'flex';
+            
+            const btnConfirmar = document.getElementById('btnConfirmarAcao');
+            btnConfirmar.className = 'btn-confirm-modal';
+            btnConfirmar.innerHTML = '<i class="fas fa-check"></i> Sim, confirmar';
+            
+            document.getElementById('modalConfirmacao').classList.add('active');
         }
         
         function abrirModalCancelar(id, nome, valor) {
-            idPendente = id; acaoPendente = 'cancelar';
+            idPendente = id;
+            acaoPendente = 'cancelar';
+            
+            document.getElementById('modalTitulo').innerHTML = '<i class="fas fa-times-circle"></i> Cancelar Pagamento';
             document.getElementById('modalIcone').innerHTML = '<i class="fas fa-times-circle" style="color: #dc3545; font-size: 3rem;"></i>';
             document.getElementById('modalMensagem').innerHTML = 'Cancelar este pagamento?';
             document.getElementById('modalDetalhes').innerHTML = '<strong>Cliente:</strong> ' + nome + '<br><strong>Valor:</strong> MZN ' + valor.toFixed(2);
-            document.getElementById('btnConfirmarAcao').className = 'btn-confirm-modal';
-            document.getElementById('btnConfirmarAcao').innerHTML = '<i class="fas fa-trash"></i> Sim, cancelar';
-            document.getElementById('modalConfirmacao').style.display = 'flex';
+            
+            const btnConfirmar = document.getElementById('btnConfirmarAcao');
+            btnConfirmar.className = 'btn-confirm-modal btn-confirm-danger';
+            btnConfirmar.innerHTML = '<i class="fas fa-trash"></i> Sim, cancelar';
+            
+            document.getElementById('modalConfirmacao').classList.add('active');
         }
         
-        function fecharModalConfirmacao() {
-            document.getElementById('modalConfirmacao').style.display = 'none';
-            idPendente = null; acaoPendente = null;
+        function fecharModal() {
+            document.getElementById('modalConfirmacao').classList.remove('active');
+            idPendente = null;
+            acaoPendente = null;
         }
         
         function executarAcao() {
@@ -504,14 +816,29 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
             }
         }
         
-        function emitirRecibo(id) { window.open('../pagamentos/recibo.php?id=' + id, '_blank'); }
+        function emitirRecibo(id) {
+            window.open('../pagamentos/recibo.php?id=' + id, '_blank');
+        }
         
-        document.getElementById('btnConfirmarAcao').onclick = function() { executarAcao(); fecharModalConfirmacao(); };
-        window.onclick = function(event) { if (event.target === document.getElementById('modalConfirmacao')) fecharModalConfirmacao(); };
-        document.getElementById('modalConfirmacao').style.display = 'none';
+        document.getElementById('btnConfirmarAcao').onclick = function() {
+            executarAcao();
+            fecharModal();
+        };
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(event) {
+            if(event.key === 'Escape') {
+                fecharModal();
+            }
+        });
+        
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalConfirmacao');
+            if(event.target === modal) {
+                fecharModal();
+            }
+        }
     </script>
-    
-    <script src="../assets/js/main.js"></script>
-    <script src="../assets/js/funcionario.js"></script>
 </body>
 </html>
