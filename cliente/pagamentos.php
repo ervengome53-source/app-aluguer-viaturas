@@ -13,10 +13,9 @@ $mensagem = '';
 $erro = '';
 
 // ============================================
-// SE TEM RESERVA_ID -> MOSTRA FORMULÁRIO DE PAGAMENTO (COM BARRA LATERAL)
+// SE TEM RESERVA_ID -> MOSTRA FORMULÁRIO DE PAGAMENTO
 // ============================================
 if($reserva_id > 0) {
-    // Buscar dados da reserva e VERIFICAR se já tem pagamento
     $query = "SELECT r.*, v.marca, v.modelo, v.preco_dia,
               (SELECT COUNT(*) FROM pagamentos WHERE reserva_id = r.id AND estado IN ('confirmado', 'pendente')) as total_pagamentos
               FROM reservas r 
@@ -30,9 +29,7 @@ if($reserva_id > 0) {
     $valor_total = $reserva['preco_total'] ?? 0;
     $total_pagamentos = $reserva['total_pagamentos'] ?? 0;
     
-    // Processar pagamento
     if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
-        // VERIFICAR novamente se já existe pagamento (proteção contra duplicados)
         $checkQuery = "SELECT COUNT(*) as total FROM pagamentos WHERE reserva_id = :reserva_id AND estado IN ('confirmado', 'pendente')";
         $checkStmt = $db->prepare($checkQuery);
         $checkStmt->bindParam(':reserva_id', $reserva_id);
@@ -40,7 +37,7 @@ if($reserva_id > 0) {
         $checkResult = $checkStmt->fetch(PDO::FETCH_ASSOC);
         
         if($checkResult['total'] > 0) {
-            $erro = "Esta reserva já possui um pagamento registado. Não é possível efetuar outro pagamento.";
+            $erro = "Esta reserva já possui um pagamento registado.";
         } else {
             $metodo = $_POST['metodo_pagamento'];
             $referencia = 'PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
@@ -75,8 +72,8 @@ if($reserva_id > 0) {
             $stmt->bindParam(':dados', $dados_json);
             
             if($stmt->execute()) {
-                $_SESSION['mensagem_sucesso'] = "Pagamento registado com sucesso! Aguarde confirmação do funcionário.";
-                header('Location: reservas.php');
+                $_SESSION['mensagem_sucesso'] = "Pagamento registado com sucesso! Aguarde confirmação.";
+                header('Location: pagamentos.php');
                 exit();
             } else {
                 $erro = "Erro ao processar pagamento. Tente novamente.";
@@ -84,117 +81,240 @@ if($reserva_id > 0) {
         }
     }
     
-    // MOSTRAR FORMULÁRIO DE PAGAMENTO COM A BARRA LATERAL PADRÃO
     ?>
     <!DOCTYPE html>
     <html lang="pt">
     <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
         <title>Pagar Reserva - SIGAV</title>
-        <link rel="stylesheet" href="../assets/css/estilo.css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         <style>
-            .pagamento-content {
-                max-width: 600px;
-                margin: 0 auto;
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: 'Inter', sans-serif; background: #f5f7fb; }
+            
+            .container-app { display: flex; min-height: 100vh; }
+            .barra-lateral { width: 280px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; position: fixed; left: 0; top: 0; height: 100vh; overflow-y: auto; z-index: 100; transition: all 0.3s ease; }
+            .conteudo-principal { flex: 1; margin-left: 280px; padding: 2rem; background: #f5f7fb; min-height: 100vh; width: calc(100% - 280px); }
+            .barra-superior { background: white; border-radius: 1rem; padding: 1rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+            
+            .page-header { margin-bottom: 2rem; }
+            .page-header h1 { font-size: 2rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+            .page-header p { color: #666; font-size: 0.95rem; }
+            
+            .pagamento-card {
                 background: white;
-                border-radius: 16px;
+                border-radius: 1.5rem;
+                max-width: 650px;
+                margin: 0 auto;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                overflow: hidden;
+            }
+            
+            .card-header {
                 padding: 1.5rem;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                border-bottom: 1px solid #eee;
             }
-            .pagamento-header {
-                text-align: center;
-                margin-bottom: 1.5rem;
-                padding-bottom: 1rem;
-                border-bottom: 2px solid #FF8C00;
+            
+            .card-header h2 {
+                font-size: 1.3rem;
+                font-weight: 600;
+                color: #1a1a2e;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
             }
-            .pagamento-header h1 {
-                color: #1E3A5F;
-                font-size: 1.5rem;
-                margin-bottom: 0.3rem;
+            
+            .card-body {
+                padding: 1.5rem;
             }
+            
             .info-reserva {
                 background: #f8f9fa;
-                border-radius: 12px;
+                border-radius: 1rem;
                 padding: 1rem;
                 margin-bottom: 1.5rem;
             }
+            
             .info-linha {
                 display: flex;
                 justify-content: space-between;
-                margin-bottom: 8px;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #eee;
                 font-size: 0.85rem;
             }
-            .total { border-top: 1px solid #ddd; margin-top: 8px; padding-top: 8px; }
-            .total .info-valor { color: #28a745; font-weight: bold; }
+            
+            .info-linha:last-child {
+                border-bottom: none;
+            }
+            
+            .info-label { color: #666; }
+            .info-valor { font-weight: 600; color: #1a1a2e; }
+            .total .info-valor { color: #FF8C00; font-size: 1rem; }
+            
             .form-group { margin-bottom: 1.2rem; }
-            .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #1E3A5F; font-size: 0.85rem; }
-            .metodos {
+            .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; font-size: 0.85rem; }
+            .form-group label i { color: #FF8C00; width: 20px; }
+            
+            .form-control {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                border: 2px solid #e0e0e0;
+                border-radius: 0.8rem;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+            
+            .form-control:focus {
+                outline: none;
+                border-color: #FF8C00;
+                box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+            }
+            
+            select.form-control {
+                cursor: pointer;
+                background: white;
+            }
+            
+            textarea.form-control {
+                resize: vertical;
+                min-height: 80px;
+            }
+            
+            .metodos-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
                 margin-bottom: 1.5rem;
             }
-            .metodo {
-                border: 2px solid #e9ecef;
-                border-radius: 12px;
+            
+            .metodo-item {
+                border: 2px solid #e0e0e0;
+                border-radius: 1rem;
                 padding: 1rem;
                 text-align: center;
                 cursor: pointer;
-                transition: all 0.2s ease;
+                transition: all 0.3s ease;
             }
-            .metodo:hover { border-color: #1E3A5F; }
-            .metodo.selected { border-color: #1E3A5F; background: rgba(30,58,95,0.05); }
-            .metodo i { font-size: 1.8rem; display: block; margin-bottom: 0.5rem; color: #1E3A5F; }
-            .metodo-text { font-size: 0.8rem; font-weight: 500; }
+            
+            .metodo-item:hover {
+                border-color: #FF8C00;
+                background: #fef9e6;
+            }
+            
+            .metodo-item.selected {
+                border-color: #FF8C00;
+                background: #fef9e6;
+            }
+            
+            .metodo-item i {
+                font-size: 1.8rem;
+                color: #FF8C00;
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+            
+            .metodo-text {
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #333;
+            }
+            
             .dados-pagamento {
                 background: #f8f9fa;
-                border-radius: 12px;
+                border-radius: 1rem;
                 padding: 1rem;
                 margin-bottom: 1.5rem;
                 display: none;
             }
-            .dados-pagamento.active { display: block; }
-            .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-            input, select {
-                width: 100%;
-                padding: 0.7rem;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                font-size: 0.85rem;
+            
+            .dados-pagamento.active {
+                display: block;
             }
-            textarea {
-                width: 100%;
-                padding: 0.7rem;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                font-size: 0.85rem;
-                resize: vertical;
+            
+            .dados-pagamento h4 {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #1a1a2e;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
             }
+            
+            .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .alert-info {
+                background: #e7f3ff;
+                border-left: 4px solid #FF8C00;
+                padding: 0.8rem;
+                border-radius: 0.8rem;
+                font-size: 0.8rem;
+                color: #666;
+            }
+            
             .btn-pagar {
                 width: 100%;
                 padding: 0.8rem;
-                background: #1E3A5F;
+                background: #FF8C00;
                 color: white;
                 border: none;
-                border-radius: 10px;
-                font-size: 1rem;
+                border-radius: 0.8rem;
+                font-size: 0.9rem;
                 font-weight: 600;
                 cursor: pointer;
                 transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
             }
-            .btn-pagar:hover { background: #FF8C00; transform: translateY(-2px); }
-            .mensagem { background: #d4edda; color: #155724; padding: 0.8rem; border-radius: 10px; margin-bottom: 1rem; text-align: center; }
-            .erro { background: #f8d7da; color: #721c24; padding: 0.8rem; border-radius: 10px; margin-bottom: 1rem; text-align: center; }
-            .voltar { display: block; text-align: center; margin-top: 1rem; color: #FF8C00; text-decoration: none; }
-            .alert-info {
-                background: #d1ecf1;
-                border: 1px solid #bee5eb;
-                color: #0c5460;
-                padding: 0.8rem;
-                border-radius: 8px;
+            
+            .btn-pagar:hover {
+                background: #e67e00;
+                transform: translateY(-2px);
             }
+            
+            .btn-secondary {
+                background: #6c757d;
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 0.8rem;
+                cursor: pointer;
+                font-size: 0.8rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                text-decoration: none;
+            }
+            
+            .btn-secondary:hover {
+                background: #5a6268;
+                transform: translateY(-2px);
+            }
+            
+            .mensagem { background: #d4edda; color: #155724; padding: 1rem; border-radius: 1rem; margin-bottom: 1rem; border-left: 4px solid #28a745; }
+            .erro { background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 1rem; margin-bottom: 1rem; border-left: 4px solid #dc3545; }
+            
+            .voltar-link {
+                display: block;
+                text-align: center;
+                margin-top: 1rem;
+                color: #FF8C00;
+                text-decoration: none;
+                font-size: 0.85rem;
+            }
+            
+            .voltar-link:hover { text-decoration: underline; }
+            
+            /* Modal */
             .modal {
                 display: none;
                 position: fixed;
@@ -204,96 +324,133 @@ if($reserva_id > 0) {
                 width: 100%;
                 height: 100%;
                 background-color: rgba(0,0,0,0.5);
+                backdrop-filter: blur(4px);
                 justify-content: center;
                 align-items: center;
             }
+            
+            .modal.active { display: flex; }
+            
             .modal-content {
                 background: white;
-                border-radius: 20px;
+                border-radius: 1.5rem;
                 width: 90%;
                 max-width: 450px;
                 animation: modalFadeIn 0.3s ease;
                 overflow: hidden;
             }
+            
             @keyframes modalFadeIn {
                 from { opacity: 0; transform: translateY(-50px); }
                 to { opacity: 1; transform: translateY(0); }
             }
+            
             .modal-header {
-                background: #1E3A5F;
-                color: white;
-                padding: 1rem 1.5rem;
+                padding: 1.2rem 1.5rem;
+                background: white;
+                border-bottom: 1px solid #eee;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
             }
+            
             .modal-header h3 {
-                margin: 0;
-                font-size: 1.2rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #1a1a2e;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
             }
+            
             .modal-close {
                 background: none;
                 border: none;
-                color: white;
-                font-size: 1.5rem;
+                color: #999;
+                font-size: 1.3rem;
                 cursor: pointer;
+                transition: all 0.3s ease;
             }
-            .modal-close:hover { opacity: 0.8; }
+            
+            .modal-close:hover {
+                transform: rotate(90deg);
+                color: #dc3545;
+            }
+            
             .modal-body {
                 padding: 1.5rem;
             }
+            
             .modal-resumo {
                 background: #f8f9fa;
-                border-radius: 12px;
+                border-radius: 1rem;
                 padding: 1rem;
-                margin-bottom: 1rem;
+                margin: 1rem 0;
             }
+            
             .modal-resumo-linha {
                 display: flex;
                 justify-content: space-between;
-                padding: 8px 0;
-                border-bottom: 1px solid #e9ecef;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #eee;
+                font-size: 0.85rem;
             }
+            
             .modal-resumo-linha:last-child {
                 border-bottom: none;
             }
+            
             .modal-resumo-total {
-                background: #e8f5e9;
-                border-radius: 10px;
-                padding: 10px;
-                margin-top: 10px;
-                font-weight: bold;
+                background: #fef9e6;
+                border-radius: 0.8rem;
+                padding: 0.8rem;
+                margin-top: 0.8rem;
             }
+            
             .modal-botoes {
                 display: flex;
                 gap: 1rem;
                 margin-top: 1.5rem;
             }
+            
             .btn-modal-cancelar {
                 flex: 1;
                 padding: 0.7rem;
                 background: #6c757d;
                 color: white;
                 border: none;
-                border-radius: 10px;
+                border-radius: 0.8rem;
                 cursor: pointer;
-                font-size: 0.9rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
             }
+            
+            .btn-modal-cancelar:hover {
+                background: #5a6268;
+                transform: translateY(-2px);
+            }
+            
             .btn-modal-confirmar {
                 flex: 1;
                 padding: 0.7rem;
-                background: #28a745;
+                background: #FF8C00;
                 color: white;
                 border: none;
-                border-radius: 10px;
+                border-radius: 0.8rem;
                 cursor: pointer;
-                font-size: 0.9rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
             }
-            .btn-modal-confirmar:hover { background: #218838; }
-            .btn-modal-cancelar:hover { background: #5a6268; }
+            
+            .btn-modal-confirmar:hover {
+                background: #e67e00;
+                transform: translateY(-2px);
+            }
             
             @media (max-width: 768px) {
-                .metodos { grid-template-columns: 1fr; }
+                .barra-lateral { width: 0; transform: translateX(-100%); }
+                .conteudo-principal { margin-left: 0; width: 100%; padding: 1rem; }
+                .metodos-grid { grid-template-columns: 1fr; }
                 .form-row { grid-template-columns: 1fr; }
             }
         </style>
@@ -305,140 +462,141 @@ if($reserva_id > 0) {
             <div class="conteudo-principal">
                 <?php include '../components/cabecalho.php'; ?>
                 
-                <div class="pagamento-content">
-                    <div class="pagamento-header">
-                        <h1><i class="fas fa-credit-card"></i> Pagar Reserva</h1>
-                        <p>Conclua o seu pagamento de forma segura</p>
-                    </div>
-                    
-                    <?php if($mensagem): ?>
-                        <div class="mensagem"><i class="fas fa-check-circle"></i> <?= $mensagem ?></div>
-                        <a href="reservas.php" class="voltar"><i class="fas fa-arrow-left"></i> Voltar para Minhas Reservas</a>
-                    <?php elseif($erro): ?>
+                <div class="page-header">
+                    <h1>Pagar Reserva</h1>
+                    <p>Conclua o seu pagamento de forma segura</p>
+                </div>
+                
+                <div class="pagamento-card">
+                    <?php if($erro): ?>
                         <div class="erro"><i class="fas fa-exclamation-triangle"></i> <?= $erro ?></div>
-                        <a href="reservas.php" class="voltar"><i class="fas fa-arrow-left"></i> Voltar para Minhas Reservas</a>
-                    <?php elseif($reserva): ?>
+                        <a href="reservas.php" class="voltar-link"><i class="fas fa-arrow-left"></i> Voltar para Minhas Reservas</a>
+                    <?php elseif($reserva && $total_pagamentos == 0): ?>
                     
-                    <!-- VERIFICAÇÃO: Se já tem pagamento, mostra erro e não exibe formulário -->
-                    <?php if($total_pagamentos > 0): ?>
-                        <div class="erro" style="background: #fff3cd; color: #856404; border-color: #ffeeba;">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            <strong>Pagamento já efetuado!</strong> Esta reserva já possui um pagamento registado e aguarda confirmação.
+                    <div class="card-header">
+                        <h2><i class="fas fa-credit-card"></i> Dados do Pagamento</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-reserva">
+                            <div class="info-linha">
+                                <span class="info-label"><i class="fas fa-car"></i> Viatura</span>
+                                <span class="info-valor"><?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?></span>
+                            </div>
+                            <div class="info-linha">
+                                <span class="info-label"><i class="fas fa-calendar"></i> Período</span>
+                                <span class="info-valor"><?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?> até <?= date('d/m/Y', strtotime($reserva['data_fim'])) ?></span>
+                            </div>
+                            <div class="info-linha total">
+                                <span class="info-label"><i class="fas fa-money-bill-wave"></i> Valor total</span>
+                                <span class="info-valor">MZN <?= number_format($valor_total, 2) ?></span>
+                            </div>
                         </div>
-                        <div style="text-align: center; margin-top: 1rem;">
-                            <a href="reservas.php" class="voltar"><i class="fas fa-arrow-left"></i> Voltar para Minhas Reservas</a>
-                        </div>
-                    <?php else: ?>
-                    
-                    <div class="info-reserva">
-                        <div class="info-linha"><span class="info-label"><i class="fas fa-car"></i> Viatura</span><span class="info-valor"><?= htmlspecialchars($reserva['marca'] . ' ' . $reserva['modelo']) ?></span></div>
-                        <div class="info-linha"><span class="info-label"><i class="fas fa-calendar"></i> Período</span><span class="info-valor"><?= date('d/m/Y', strtotime($reserva['data_inicio'])) ?> até <?= date('d/m/Y', strtotime($reserva['data_fim'])) ?></span></div>
-                        <div class="info-linha total"><span class="info-label"><i class="fas fa-money-bill-wave"></i> Valor total</span><span class="info-valor">MZN <?= number_format($valor_total, 2) ?></span></div>
+                        
+                        <form method="POST" id="formPagamento">
+                            <input type="hidden" name="acao" value="pagar">
+                            <input type="hidden" name="metodo_pagamento" id="metodo_selecionado" required>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-credit-card"></i> Método de Pagamento</label>
+                                <div class="metodos-grid">
+                                    <div class="metodo-item" data-metodo="cartao">
+                                        <i class="fas fa-credit-card"></i>
+                                        <span class="metodo-text">Cartão Crédito</span>
+                                    </div>
+                                    <div class="metodo-item" data-metodo="carteira_movel">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <span class="metodo-text">Carteira Móvel</span>
+                                    </div>
+                                    <div class="metodo-item" data-metodo="dinheiro">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <span class="metodo-text">Dinheiro</span>
+                                    </div>
+                                    <div class="metodo-item" data-metodo="transferencia">
+                                        <i class="fas fa-university"></i>
+                                        <span class="metodo-text">Transferência</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="dados_cartao" class="dados-pagamento">
+                                <h4><i class="fas fa-credit-card"></i> Dados do Cartão</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Número do Cartão</label>
+                                        <input type="text" name="numero_cartao" class="form-control" placeholder="1234 5678 9012 3456">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Validade</label>
+                                        <input type="text" name="validade" class="form-control" placeholder="MM/AA">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>CVV</label>
+                                        <input type="password" name="cvv" class="form-control" placeholder="123">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nome do Titular</label>
+                                        <input type="text" name="nome_titular" class="form-control" placeholder="Como no cartão">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="dados_carteira_movel" class="dados-pagamento">
+                                <h4><i class="fas fa-mobile-alt"></i> Dados da Carteira Móvel</h4>
+                                <div class="form-group">
+                                    <label>Operadora</label>
+                                    <select name="operadora" class="form-control">
+                                        <option value="mpesa">M-Pesa</option>
+                                        <option value="emola">E-MOLA</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Número de Telemóvel</label>
+                                    <input type="tel" name="telefone_carteira" class="form-control" placeholder="84XXXXXXX">
+                                </div>
+                                <div class="form-group">
+                                    <label>PIN de Confirmação</label>
+                                    <input type="password" name="pin_carteira" class="form-control" placeholder="****" maxlength="4">
+                                </div>
+                            </div>
+                            
+                            <div id="dados_dinheiro" class="dados-pagamento">
+                                <div class="alert-info">
+                                    <i class="fas fa-info-circle"></i> Pagamento em dinheiro - será processado no balcão da loja.
+                                </div>
+                            </div>
+                            
+                            <div id="dados_transferencia" class="dados-pagamento">
+                                <div class="alert-info">
+                                    <i class="fas fa-info-circle"></i> Transferência bancária - utilize os dados abaixo:
+                                    <br><strong>IBAN:</strong> PT50 0000 0000 0000 0000 0000 0
+                                    <br><strong>SWIFT:</strong> EXMPPT3X
+                                    <br><br>Após a transferência, o pagamento será confirmado manualmente.
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-comment"></i> Observações</label>
+                                <textarea name="observacoes" class="form-control" rows="2" placeholder="Notas adicionais..."></textarea>
+                            </div>
+                            
+                            <button type="button" class="btn-pagar" onclick="abrirModal()">
+                                <i class="fas fa-check-circle"></i> Confirmar Pagamento
+                            </button>
+                        </form>
+                        
+                        <a href="reservas.php" class="voltar-link"><i class="fas fa-arrow-left"></i> Voltar para Minhas Reservas</a>
                     </div>
                     
-                    <form method="POST" id="formPagamento">
-                        <input type="hidden" name="acao" value="pagar">
-                        <input type="hidden" name="metodo_pagamento" id="metodo_selecionado" required>
-                        
-                        <div class="form-group">
-                            <label><i class="fas fa-credit-card"></i> Método de Pagamento</label>
-                            <div class="metodos">
-                                <div class="metodo" data-metodo="cartao">
-                                    <i class="fas fa-credit-card"></i>
-                                    <span class="metodo-text">Cartão Crédito</span>
-                                </div>
-                                <div class="metodo" data-metodo="carteira_movel">
-                                    <i class="fas fa-mobile-alt"></i>
-                                    <span class="metodo-text">Carteira Móvel</span>
-                                </div>
-                                <div class="metodo" data-metodo="dinheiro">
-                                    <i class="fas fa-money-bill-wave"></i>
-                                    <span class="metodo-text">Dinheiro</span>
-                                </div>
-                                <div class="metodo" data-metodo="transferencia">
-                                    <i class="fas fa-university"></i>
-                                    <span class="metodo-text">Transferência</span>
-                                </div>
-                            </div>
+                    <?php elseif($reserva && $total_pagamentos > 0): ?>
+                        <div class="erro" style="background: #fff3cd; color: #856404;">
+                            <i class="fas fa-exclamation-triangle"></i> Esta reserva já possui um pagamento registado e aguarda confirmação.
                         </div>
-                        
-                        <div id="dados_cartao" class="dados-pagamento">
-                            <h4><i class="fas fa-credit-card"></i> Dados do Cartão</h4>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Número do Cartão</label>
-                                    <input type="text" name="numero_cartao" placeholder="1234 5678 9012 3456">
-                                </div>
-                                <div class="form-group">
-                                    <label>Validade</label>
-                                    <input type="text" name="validade" placeholder="MM/AA">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>CVV</label>
-                                    <input type="password" name="cvv" placeholder="123">
-                                </div>
-                                <div class="form-group">
-                                    <label>Nome do Titular</label>
-                                    <input type="text" name="nome_titular" placeholder="Como no cartão">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="dados_carteira_movel" class="dados-pagamento">
-                            <h4><i class="fas fa-mobile-alt"></i> Dados da Carteira Móvel</h4>
-                            <div class="form-group">
-                                <label>Operadora</label>
-                                <select name="operadora">
-                                    <option value="mpesa">M-Pesa</option>
-                                    <option value="emola">E-MOLA</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Número de Telemóvel</label>
-                                <input type="tel" name="telefone_carteira" placeholder="84XXXXXXX">
-                            </div>
-                            <div class="form-group">
-                                <label>PIN de Confirmação</label>
-                                <input type="password" name="pin_carteira" placeholder="****" maxlength="4">
-                            </div>
-                        </div>
-                        
-                        <div id="dados_dinheiro" class="dados-pagamento">
-                            <div class="alert-info">
-                                <i class="fas fa-info-circle"></i> Pagamento em dinheiro - será processado no balcão.
-                            </div>
-                        </div>
-                        
-                        <div id="dados_transferencia" class="dados-pagamento">
-                            <div class="alert-info">
-                                <i class="fas fa-info-circle"></i> Transferência bancária - utilize os dados abaixo:
-                                <br><strong>IBAN:</strong> PT50 0000 0000 0000 0000 0000 0
-                                <br><strong>SWIFT:</strong> EXMPPT3X
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label><i class="fas fa-comment"></i> Observações</label>
-                            <textarea name="observacoes" rows="2" placeholder="Notas adicionais..."></textarea>
-                        </div>
-                        
-                        <button type="button" class="btn-pagar" onclick="abrirModal()">
-                            <i class="fas fa-check-circle"></i> Confirmar Pagamento
-                        </button>
-                    </form>
-                    
-                    <a href="reservas.php" class="voltar"><i class="fas fa-arrow-left"></i> Voltar para Minhas Reservas</a>
-                    
-                    <?php endif; ?>
-                    
+                        <a href="reservas.php" class="voltar-link"><i class="fas fa-arrow-left"></i> Voltar para Minhas Reservas</a>
                     <?php else: ?>
-                    <div style="text-align: center; padding: 2rem;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ffc107;"></i>
-                        <p>Reserva não encontrada ou já foi paga.</p>
-                        <a href="reservas.php" class="voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
-                    </div>
+                        <div class="erro"><i class="fas fa-exclamation-triangle"></i> Reserva não encontrada ou não está confirmada.</div>
+                        <a href="reservas.php" class="voltar-link"><i class="fas fa-arrow-left"></i> Voltar para Minhas Reservas</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -448,11 +606,11 @@ if($reserva_id > 0) {
         <div id="modalConfirmacao" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3><i class="fas fa-shield-alt"></i> Confirmar Pagamento</h3>
+                    <h3><i class="fas fa-question-circle"></i> Confirmar Pagamento</h3>
                     <button class="modal-close" onclick="fecharModal()">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p style="margin-bottom: 1rem; color: #666;">Revise os dados antes de confirmar:</p>
+                    <p>Tem certeza que deseja confirmar este pagamento?</p>
                     <div class="modal-resumo">
                         <div class="modal-resumo-linha">
                             <span><i class="fas fa-car"></i> Viatura:</span>
@@ -469,7 +627,7 @@ if($reserva_id > 0) {
                         <div class="modal-resumo-total">
                             <div style="display: flex; justify-content: space-between;">
                                 <span><i class="fas fa-money-bill-wave"></i> Valor Total:</span>
-                                <strong style="color: #28a745; font-size: 1.1rem;">MZN <?= number_format($valor_total, 2) ?></strong>
+                                <strong style="color: #FF8C00;">MZN <?= number_format($valor_total, 2) ?></strong>
                             </div>
                         </div>
                     </div>
@@ -486,15 +644,14 @@ if($reserva_id > 0) {
         </div>
         
         <script>
-            // Seleção do método de pagamento
             let metodoAtual = '';
             
-            document.querySelectorAll('.metodo').forEach(el => {
+            document.querySelectorAll('.metodo-item').forEach(el => {
                 el.addEventListener('click', function() {
                     const metodo = this.dataset.metodo;
                     metodoAtual = metodo;
                     
-                    document.querySelectorAll('.metodo').forEach(m => m.classList.remove('selected'));
+                    document.querySelectorAll('.metodo-item').forEach(m => m.classList.remove('selected'));
                     this.classList.add('selected');
                     
                     document.querySelectorAll('.dados-pagamento').forEach(div => div.classList.remove('active'));
@@ -513,7 +670,6 @@ if($reserva_id > 0) {
                 });
             });
             
-            // Funções do Modal
             function abrirModal() {
                 const metodo = document.getElementById('metodo_selecionado').value;
                 
@@ -531,29 +687,32 @@ if($reserva_id > 0) {
                     default: metodoTexto = metodo;
                 }
                 document.getElementById('modalMetodo').innerHTML = metodoTexto;
-                
-                document.getElementById('modalConfirmacao').style.display = 'flex';
+                document.getElementById('modalConfirmacao').classList.add('active');
             }
             
             function fecharModal() {
-                document.getElementById('modalConfirmacao').style.display = 'none';
+                document.getElementById('modalConfirmacao').classList.remove('active');
             }
             
             function finalizarPagamento() {
-                document.getElementById('modalConfirmacao').style.display = 'none';
                 document.getElementById('formPagamento').submit();
             }
             
             window.onclick = function(event) {
                 const modal = document.getElementById('modalConfirmacao');
-                if (event.target === modal) {
-                    modal.style.display = 'none';
+                if(event.target === modal) {
+                    fecharModal();
                 }
             }
+            
+            document.addEventListener('keydown', function(event) {
+                if(event.key === 'Escape') {
+                    fecharModal();
+                }
+            });
         </script>
         
         <script src="../assets/js/main.js"></script>
-        <script src="../assets/js/cliente.js"></script>
     </body>
     </html>
     <?php
@@ -561,10 +720,9 @@ if($reserva_id > 0) {
 }
 
 // ============================================
-// SE NÃO TEM RESERVA_ID -> MOSTRA HISTÓRICO DE PAGAMENTOS
+// SE NÃO TEM RESERVA_ID -> LISTA DE PAGAMENTOS
 // ============================================
 
-// Buscar pagamentos do cliente
 $query = "SELECT p.*, 
           CASE 
               WHEN p.reserva_id IS NOT NULL THEN 
@@ -580,119 +738,186 @@ $stmt->bindParam(':utilizador_id', $utilizador['id']);
 $stmt->execute();
 $pagamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Estatísticas
-$query = "SELECT 
-          COUNT(*) as total,
-          SUM(CASE WHEN estado = 'confirmado' THEN valor ELSE 0 END) as total_pago,
-          SUM(CASE WHEN estado = 'pendente' THEN valor ELSE 0 END) as total_pendente
-          FROM pagamentos WHERE utilizador_id = :utilizador_id";
-$stmt = $db->prepare($query);
-$stmt->bindParam(':utilizador_id', $utilizador['id']);
-$stmt->execute();
-$stats = $stmt->fetch(PDO::FETCH_ASSOC);
+$mensagem_sucesso = $_SESSION['mensagem_sucesso'] ?? '';
+unset($_SESSION['mensagem_sucesso']);
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Meus Pagamentos - SIGAV</title>
-    <link rel="stylesheet" href="../assets/css/estilo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .stats-pagamentos {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fb; }
+        
+        .container-app { display: flex; min-height: 100vh; }
+        .barra-lateral { width: 280px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; position: fixed; left: 0; top: 0; height: 100vh; overflow-y: auto; z-index: 100; transition: all 0.3s ease; }
+        .conteudo-principal { flex: 1; margin-left: 280px; padding: 2rem; background: #f5f7fb; min-height: 100vh; width: calc(100% - 280px); }
+        .barra-superior { background: white; border-radius: 1rem; padding: 1rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 2rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 0.95rem; }
+        
+        .filtros {
+            display: flex;
+            gap: 0.5rem;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.2rem;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .stat-value { font-size: 1.8rem; font-weight: bold; color: #1E3A5F; }
-        .stat-label { font-size: 0.75rem; color: #666; margin-top: 0.3rem; }
-        .filtros { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        
         .filtro-btn {
             padding: 0.4rem 1rem;
-            border: none;
-            background: #e9ecef;
-            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 2rem;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-        .filtro-btn.ativo, .filtro-btn:hover { background: #1E3A5F; color: white; }
+        
+        .filtro-btn:hover {
+            border-color: #FF8C00;
+            color: #FF8C00;
+        }
+        
+        .filtro-btn.ativo {
+            background: #FF8C00;
+            border-color: #FF8C00;
+            color: white;
+        }
+        
         .pagamento-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 1rem;
             padding: 1rem;
             margin-bottom: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
+        
+        .pagamento-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
         .pagamento-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #f0f0f0;
         }
-        .status-confirmado {
-            background: #28a745;
-            color: white;
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
+        
+        .referencia {
+            font-weight: 600;
+            color: #1a1a2e;
+            font-size: 0.9rem;
+        }
+        
+        .valor {
+            font-weight: 700;
+            color: #FF8C00;
+            font-size: 1rem;
+        }
+        
+        .badge-status {
             display: inline-flex;
             align-items: center;
             gap: 0.3rem;
-        }
-        .status-pendente {
-            background: #ffc107;
-            color: #333;
             padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
+            border-radius: 2rem;
+            font-size: 0.65rem;
+            font-weight: 500;
         }
+        
+        .badge-confirmado {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-pendente {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         .btn-recibo {
-            background: #17a2b8;
-            color: white;
+            background: none;
+            border: 1px solid #17a2b8;
+            color: #17a2b8;
             padding: 0.3rem 0.8rem;
-            border: none;
-            border-radius: 5px;
+            border-radius: 0.5rem;
             cursor: pointer;
             font-size: 0.7rem;
+            transition: all 0.3s ease;
         }
+        
+        .btn-recibo:hover {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .toast-success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-left: 4px solid #28a745;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
         @media (max-width: 768px) {
-            .stats-pagamentos { grid-template-columns: 1fr; }
+            .barra-lateral { width: 0; transform: translateX(-100%); }
+            .conteudo-principal { margin-left: 0; width: 100%; padding: 1rem; }
+            .pagamento-header { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
     <div class="container-app">
         <?php include '../components/barra_lateral.php'; ?>
+        
         <div class="conteudo-principal">
             <?php include '../components/cabecalho.php'; ?>
             
-            <div class="stats-pagamentos">
-                <div class="stat-card">
-                    <div class="stat-value"><?= $stats['total'] ?? 0 ?></div>
-                    <div class="stat-label"><i class="fas fa-receipt"></i> Total de Pagamentos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">MZN <?= number_format($stats['total_pago'] ?? 0, 2) ?></div>
-                    <div class="stat-label"><i class="fas fa-check-circle"></i> Total Confirmado</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">MZN <?= number_format($stats['total_pendente'] ?? 0, 2) ?></div>
-                    <div class="stat-label"><i class="fas fa-clock"></i> Pendente</div>
-                </div>
+            <?php if($mensagem_sucesso): ?>
+            <div class="toast-success" id="toast">
+                <i class="fas fa-check-circle" style="color: #28a745;"></i> <?= htmlspecialchars($mensagem_sucesso) ?>
+            </div>
+            <script>setTimeout(() => { const t = document.getElementById('toast'); if(t) t.style.display = 'none'; }, 3000);</script>
+            <?php endif; ?>
+            
+            <div class="page-header">
+                <h1>Meus Pagamentos</h1>
+                <p>Consulte todos os seus pagamentos e recibos</p>
             </div>
             
             <div class="filtros">
@@ -707,38 +932,37 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
                     <div class="pagamento-card" data-status="<?= $p['estado'] ?>">
                         <div class="pagamento-header">
                             <div>
-                                <strong><i class="fas fa-hashtag"></i> <?= $p['referencia_pagamento'] ?></strong>
-                                <br><small><i class="fas fa-calendar-alt"></i> <?= date('d/m/Y H:i', strtotime($p['data_criacao'])) ?></small>
+                                <div class="referencia"><i class="fas fa-hashtag"></i> <?= $p['referencia_pagamento'] ?></div>
+                                <small style="color: #999;"><i class="fas fa-calendar-alt"></i> <?= date('d/m/Y H:i', strtotime($p['data_criacao'])) ?></small>
                             </div>
-                            <div style="font-weight: bold; color: #28a745;">
-                                <i class="fas fa-money-bill-wave"></i> MZN <?= number_format($p['valor'], 2) ?>
-                            </div>
+                            <div class="valor">MZN <?= number_format($p['valor'], 2) ?></div>
                         </div>
-                        <div><strong><i class="fas fa-car"></i> Descrição:</strong> <?= htmlspecialchars($p['descricao'] ?? '-') ?></div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
-                            <div><i class="fas fa-credit-card"></i> <strong>Método:</strong> <?= ucfirst(str_replace('_', ' ', $p['metodo_pagamento'])) ?></div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <i class="fas fa-car" style="color: #999;"></i> <?= htmlspecialchars($p['descricao'] ?? '-') ?>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <i class="fas fa-credit-card" style="color: #999;"></i> <?= ucfirst(str_replace('_', ' ', $p['metodo_pagamento'])) ?>
+                            </div>
                             <div>
                                 <?php if($p['estado'] == 'confirmado'): ?>
-                                    <span class="status-confirmado"><i class="fas fa-check-circle"></i> Confirmado</span>
+                                    <span class="badge-status badge-confirmado"><i class="fas fa-check-circle"></i> Confirmado</span>
+                                    <button class="btn-recibo" onclick="window.open('../pagamentos/recibo.php?id=<?= $p['id'] ?>', '_blank')">
+                                        <i class="fas fa-receipt"></i> Recibo
+                                    </button>
                                 <?php else: ?>
-                                    <span class="status-pendente"><i class="fas fa-clock"></i> Pendente</span>
+                                    <span class="badge-status badge-pendente"><i class="fas fa-clock"></i> Pendente</span>
                                 <?php endif; ?>
                             </div>
                         </div>
-                        <?php if($p['estado'] == 'confirmado'): ?>
-                        <div style="margin-top: 0.75rem; text-align: right;">
-                            <button class="btn-recibo" onclick="window.open('../pagamentos/recibo.php?id=<?= $p['id'] ?>', '_blank')">
-                                <i class="fas fa-file-pdf"></i> Baixar Recibo
-                            </button>
-                        </div>
-                        <?php endif; ?>
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                <div class="pagamento-card" style="text-align: center; padding: 2rem;">
-                    <i class="fas fa-inbox" style="font-size: 3rem; color: #ccc;"></i>
-                    <p>Nenhum pagamento encontrado.</p>
-                </div>
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Nenhum pagamento encontrado</p>
+                        <small>Os seus pagamentos aparecerão aqui</small>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -758,6 +982,5 @@ $stats = $stmt->fetch(PDO::FETCH_ASSOC);
     </script>
     
     <script src="../assets/js/main.js"></script>
-    <script src="../assets/js/cliente.js"></script>
 </body>
 </html>
